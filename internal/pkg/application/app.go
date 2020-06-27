@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"log"
+	"mall/internal/pkg/constant"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,19 +12,33 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+
+	"mall/internal/pkg/config"
 )
 
 // Application is the mall service instance.
 // It provides HTTP service now.
 type Application struct {
+	config     *config.Config
 	router     *gin.Engine
 	httpServer *http.Server
 }
 
 // New returns a new Application.
 func New() (*Application, error) {
+	// Config
+	conf, err := config.New()
+	if err != nil {
+		return nil, errors.Wrap(err, constant.ConfigError)
+	}
+
+	// Router
+	gin.SetMode(conf.RunMode)
 	r := gin.New()
+
+	// Application
 	application := &Application{
+		config: conf,
 		router: r,
 	}
 	return application, nil
