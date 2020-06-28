@@ -1,0 +1,6 @@
+Version = '0.1.0'
+RunMode = 'debug'
+
+[log]
+Level = 0
+FileName = 'logs/mall.log'

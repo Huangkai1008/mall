@@ -3,7 +3,6 @@ package application
 import (
 	"context"
 	"log"
-	"mall/internal/pkg/constant"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 
 	"mall/internal/pkg/config"
+	"mall/internal/pkg/constant"
 )
 
 // Application is the mall service instance.
