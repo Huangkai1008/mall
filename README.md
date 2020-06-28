@@ -1,6 +1,6 @@
 # Mall
 
-Market is a online shopping platform with [gin](https://github.com/gin-gonic/gin).
+Mall is a online shopping platform with [gin](https://github.com/gin-gonic/gin).
 
 ## Contents
 
@@ -14,7 +14,7 @@ Market is a online shopping platform with [gin](https://github.com/gin-gonic/gin
 
 2. Get the project
 ```bash
-go -get https://github.com/Huangkai1008/market
+go -get https://github.com/Huangkai1008/mall
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ go mod download
 
 2. Run the application
 ```bash
-go run cmd/market/main.go
+go run cmd/mall/main.go
 ```
 
 ## License
