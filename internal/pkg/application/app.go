@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
+	"mall/internal/app/v1/index"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
 	"mall/internal/pkg/logging"
@@ -50,8 +51,16 @@ func New() (*Application, error) {
 		logger: logger.With(zap.String("type", "Application")),
 		router: r,
 	}
+
+	// Add apps
+	if application.configureApps() != nil {
+		return nil, errors.Wrap(err, constant.AppConfigError)
+	}
+
 	return application, nil
 }
+
+
 
 // Start Application
 func (app *Application) Start() error {
@@ -102,4 +111,20 @@ func (app *Application) AwaitSignal() {
 		}
 		os.Exit(0)
 	}
+}
+
+func (app *Application) configureApps() error {
+	// Handler
+	indexHandler := index.NewHandler()
+
+	// Init router
+	indexRouter := index.NewRouter(indexHandler)
+
+	// API router group
+	apiGroup := app.router.Group("/api")
+	v1Group := apiGroup.Group("/v1")
+	{
+		indexRouter(v1Group)
+	}
+	return nil
 }
