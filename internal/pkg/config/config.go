@@ -1,6 +1,9 @@
 package config
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -17,6 +20,7 @@ type Config struct {
 	Version string
 	RunMode string
 	Log
+	HTTP
 }
 
 // New returns new Config instance.
@@ -50,4 +54,16 @@ func New() (*Config, error) {
 type Log struct {
 	Level    int    // logging level
 	FileName string // logging filename
+}
+
+type HTTP struct {
+	HttpHost     string
+	HttpPort     int
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+}
+
+// Addr return the TCP address in the form "host:port"
+func (h HTTP) Addr() string {
+	return fmt.Sprintf("%s:%d", h.HttpHost, h.HttpPort)
 }

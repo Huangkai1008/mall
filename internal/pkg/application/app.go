@@ -56,11 +56,17 @@ func New() (*Application, error) {
 // Start Application
 func (app *Application) Start() error {
 	app.httpServer = &http.Server{
+		Addr:           app.config.Addr(),
+		Handler:        app.router,
+		ReadTimeout:    app.config.ReadTimeout * time.Second,
+		WriteTimeout:   app.config.WriteTimeout * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
+	app.logger.Info("HTTP server starting ...", zap.String("addr", app.config.Addr()))
+
 	go func() {
-		if err := app.httpServer.ListenAndServe(); err != nil {
+		if err := app.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			app.logger.Fatal("Start HTTP server error", zap.Error(err))
 		}
 		return

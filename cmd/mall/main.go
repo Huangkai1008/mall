@@ -13,5 +13,9 @@ func main() {
 		panic(err)
 	}
 
+	if err := app.Start(); err != nil {
+		panic(err)
+	}
+
 	app.AwaitSignal()
 }
