@@ -21,6 +21,8 @@ type Config struct {
 	RunMode string
 	Log
 	HTTP
+	Gorm
+	Database
 }
 
 // New returns new Config instance.
@@ -66,4 +68,24 @@ type HTTP struct {
 // Addr return the TCP address in the form "host:port"
 func (h HTTP) Addr() string {
 	return fmt.Sprintf("%s:%d", h.HttpHost, h.HttpPort)
+}
+
+type Gorm struct {
+	MaxIdleConnections int
+	MaxOpenConnections int
+	EnableAutoMigrate  bool
+}
+
+type Database struct {
+	User       string
+	Password   string
+	Host       string
+	Port       int
+	DBName     string
+	Parameters string
+}
+
+func (d Database) DSN() string {
+	const dsn = "%s:%s@tcp(%s:%d)/%s?%s"
+	return fmt.Sprintf(dsn, d.User, d.Password, d.Host, d.Port, d.DBName, d.Parameters)
 }

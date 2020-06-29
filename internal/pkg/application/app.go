@@ -11,10 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 
 	"mall/internal/app/v1/index"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
+	gormApi "mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/middleware"
 )
@@ -24,6 +26,7 @@ import (
 type Application struct {
 	config     *config.Config
 	logger     *zap.Logger
+	db         *gorm.DB
 	router     *gin.Engine
 	httpServer *http.Server
 }
@@ -42,6 +45,12 @@ func New() (*Application, error) {
 		return nil, errors.Wrap(err, constant.LogConfigError)
 	}
 
+	// Database
+	db, err := gormApi.New(&gormApi.Options{Config: conf})
+	if err != nil {
+		return nil, errors.Wrap(err, constant.DatabaseConfigError)
+	}
+
 	// Router
 	gin.SetMode(conf.RunMode)
 	r := gin.New()
@@ -52,6 +61,7 @@ func New() (*Application, error) {
 	application := &Application{
 		config: conf,
 		logger: logger.With(zap.String("type", "Application")),
+		db:     db,
 		router: r,
 	}
 
