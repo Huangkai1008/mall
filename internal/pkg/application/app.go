@@ -16,6 +16,7 @@ import (
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
 	"mall/internal/pkg/logging"
+	"mall/internal/pkg/middleware"
 )
 
 // Application is the mall service instance.
@@ -44,6 +45,8 @@ func New() (*Application, error) {
 	// Router
 	gin.SetMode(conf.RunMode)
 	r := gin.New()
+	r.Use(gin.Recovery())
+	r.Use(middleware.LoggerMiddleware(logger))
 
 	// Application
 	application := &Application{
@@ -59,8 +62,6 @@ func New() (*Application, error) {
 
 	return application, nil
 }
-
-
 
 // Start Application
 func (app *Application) Start() error {

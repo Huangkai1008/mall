@@ -13,8 +13,8 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 
-func Ping(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
 		"name":        "mall",
 		"using":       "gin",
 		"description": "Mall is a online shopping platform with [gin](https://github.com/gin-gonic/gin).",
