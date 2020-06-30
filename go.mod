@@ -11,4 +11,5 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.2.1
 	gorm.io/gorm v1.22.4
+	gorm.io/plugin/soft_delete v1.0.4
 )
