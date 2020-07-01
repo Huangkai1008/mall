@@ -9,6 +9,8 @@ import (
 
 type Repository interface {
 	Exist(condition interface{}) (bool, error)
+
+	Create(record interface{}) error
 }
 
 type repository struct {
@@ -18,8 +20,9 @@ type repository struct {
 // NewRepository returns new user Repository.
 func NewRepository(logger *zap.Logger, db *gorm.DB) Repository {
 	return &repository{
-		GormRepository: &repo.GormRepository{
+		&repo.GormRepository{
 			Logger: logger.With(zap.String("type", "UserRepository")),
 			Db:     db,
-		}}
+		},
+	}
 }

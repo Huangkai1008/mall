@@ -10,10 +10,10 @@ import (
 
 type Handler struct {
 	logger  *zap.Logger
-	service Service
+	service *Service
 }
 
-func NewHandler(logger *zap.Logger, service Service) *Handler {
+func NewHandler(logger *zap.Logger, service *Service) *Handler {
 	return &Handler{
 		logger:  logger,
 		service: service,

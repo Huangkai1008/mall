@@ -1,8 +1,12 @@
 package index
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
 
-func NewRouter(h *Handler) func(r *gin.RouterGroup) {
+	"mall/internal/pkg/router"
+)
+
+func NewRouter(h *Handler) router.Group {
 	return func(r *gin.RouterGroup) {
 		indexAPI := r.Group("/")
 		{

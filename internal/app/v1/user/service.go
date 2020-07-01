@@ -4,22 +4,17 @@ import (
 	"go.uber.org/zap"
 
 	"golang.org/x/crypto/bcrypt"
-
-	repo "mall/internal/pkg/repository"
-	srv "mall/internal/pkg/service"
 )
 
 type Service struct {
 	logger *zap.Logger
-	srv.CRUDService
+	repo   Repository
 }
 
-func NewService(logger *zap.Logger, repo repo.GormRepository) *Service {
+func NewService(logger *zap.Logger, repo Repository) *Service {
 	return &Service{
 		logger: logger.With(zap.String("type", "UserService")),
-		CRUDService: srv.CRUDService{
-			Repo: &repo,
-		},
+		repo:   repo,
 	}
 }
 
@@ -32,6 +27,6 @@ func (s *Service) Create(user *User) (*User, error) {
 	}
 	user.Password = string(hashPassword)
 
-	err = s.Repo.Create(user)
+	err = s.repo.Create(user)
 	return user, err
 }
