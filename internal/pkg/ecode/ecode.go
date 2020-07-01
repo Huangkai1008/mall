@@ -2,7 +2,7 @@ package ecode
 
 import "github.com/tidwall/gjson"
 
-type MarketError struct {
+type MallError struct {
 	Message string `json:"message"`
 }
 

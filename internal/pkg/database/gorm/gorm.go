@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 
+	"mall/internal/app/v1/user"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
 )
@@ -50,5 +51,5 @@ func configure(db *gorm.DB, opts *Options) error {
 }
 
 func autoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate()
+	return db.AutoMigrate(&user.User{})
 }

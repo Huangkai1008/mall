@@ -1,4 +1,4 @@
-package util
+package field
 
 import (
 	"database/sql/driver"

@@ -14,11 +14,13 @@ import (
 	"gorm.io/gorm"
 
 	"mall/internal/app/v1/index"
+	"mall/internal/app/v1/user"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
 	gormApi "mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/middleware"
+	repo "mall/internal/pkg/repository"
 )
 
 // Application is the mall service instance.
@@ -125,17 +127,29 @@ func (app *Application) AwaitSignal() {
 }
 
 func (app *Application) configureApps() error {
+	// Repository
+	user.NewRepository(app.logger, app.db)
+
+	// Service
+	userService := user.NewService(app.logger, repo.GormRepository{
+		Logger: app.logger.With(zap.String("type", "UserRepository")),
+		Db:     app.db,
+	})
+
 	// Handler
 	indexHandler := index.NewHandler()
+	userHandler := user.NewHandler(app.logger, *userService)
 
 	// Init router
 	indexRouter := index.NewRouter(indexHandler)
+	userRouter := user.NewRouter(userHandler)
 
 	// API router group
 	apiGroup := app.router.Group("/api")
 	v1Group := apiGroup.Group("/v1")
 	{
 		indexRouter(v1Group)
+		userRouter(v1Group)
 	}
 	return nil
 }
