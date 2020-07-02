@@ -35,6 +35,6 @@ func (r *GormRepository) Exist(conditions interface{}) (bool, error) {
 }
 
 func (r *GormRepository) Create(record interface{}) error {
-	err := r.Db.Create(&record).Error
+	err := r.Db.Create(record).Error
 	return err
 }
