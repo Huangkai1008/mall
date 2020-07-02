@@ -20,6 +20,7 @@ import (
 	gormApi "mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/middleware"
+	"mall/internal/pkg/validator"
 )
 
 // Application is the mall service instance.
@@ -50,6 +51,11 @@ func New() (*Application, error) {
 	db, err := gormApi.New(&gormApi.Options{Config: conf})
 	if err != nil {
 		return nil, errors.Wrap(err, constant.DatabaseConfigError)
+	}
+
+	// Register translation
+	if err := validator.RegisterTranslation(conf.Locale); err != nil {
+		return nil, errors.Wrap(err, constant.TransRegisterError)
 	}
 
 	// Router

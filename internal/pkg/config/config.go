@@ -19,6 +19,7 @@ const (
 type Config struct {
 	Version string
 	RunMode string
+	Locale  string
 	Log
 	HTTP
 	Gorm
