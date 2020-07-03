@@ -18,3 +18,13 @@ const (
 	TransGetTranslatorError = "根据语言选择翻译器出错"
 	TransRegisterError      = "国际化出错"
 )
+
+const (
+	MinioConfigError           = "Minio配置错误"
+	MinioCheckBucketExistError = "Minio检查bucket是否存在出错"
+	MinioMakeBucketError       = "Minio创建bucket出错"
+	MinioReadFileError         = "Minio读取文件错误"
+	MinioPutObjectError        = "Minio创建对象失败"
+
+	MinioMakeBucketOk = "Minio创建bucket成功"
+)

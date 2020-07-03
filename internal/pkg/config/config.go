@@ -24,6 +24,7 @@ type Config struct {
 	HTTP
 	Gorm
 	Database
+	Minio
 }
 
 // New returns new Config instance.
@@ -89,4 +90,11 @@ type Database struct {
 func (d Database) DSN() string {
 	const dsn = "%s:%s@tcp(%s:%d)/%s?%s"
 	return fmt.Sprintf(dsn, d.User, d.Password, d.Host, d.Port, d.DBName, d.Parameters)
+}
+
+type Minio struct {
+	Endpoint        string
+	AccessKeyID     string
+	SecretAccessKey string
+	UseSSL          bool
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/minio/minio-go/v7"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -20,6 +21,7 @@ import (
 	gormApi "mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/middleware"
+	minioApi "mall/internal/pkg/minio"
 	"mall/internal/pkg/validator"
 )
 
@@ -31,6 +33,7 @@ type Application struct {
 	db         *gorm.DB
 	router     *gin.Engine
 	httpServer *http.Server
+	minioCli   *minio.Client
 }
 
 // New returns a new Application.
@@ -53,7 +56,7 @@ func New() (*Application, error) {
 		return nil, errors.Wrap(err, constant.DatabaseConfigError)
 	}
 
-	// Register translation
+	// Register Translation
 	if err := validator.RegisterTranslation(conf.Locale); err != nil {
 		return nil, errors.Wrap(err, constant.TransRegisterError)
 	}
@@ -64,15 +67,22 @@ func New() (*Application, error) {
 	r.Use(gin.Recovery())
 	r.Use(middleware.LoggerMiddleware(logger))
 
-	// Application
-	application := &Application{
-		config: conf,
-		logger: logger.With(zap.String("type", "Application")),
-		db:     db,
-		router: r,
+	// Minio Client
+	minioCli, err := minioApi.New(&minioApi.Options{Config: conf})
+	if err != nil {
+		return nil, errors.Wrap(err, constant.MinioConfigError)
 	}
 
-	// Add apps
+	// Application
+	application := &Application{
+		config:   conf,
+		logger:   logger.With(zap.String("type", "Application")),
+		db:       db,
+		router:   r,
+		minioCli: minioCli,
+	}
+
+	// Add Apps
 	if application.configureApps() != nil {
 		return nil, errors.Wrap(err, constant.AppConfigError)
 	}
