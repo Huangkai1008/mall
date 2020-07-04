@@ -30,6 +30,7 @@ const (
 	MinioMakeBucketError       = "Minio创建bucket出错"
 	MinioReadFileError         = "Minio读取文件错误"
 	MinioPutObjectError        = "Minio创建对象失败"
+	MinioSetPolicyError        = "Minio创建Policy失败"
 
 	MinioMakeBucketOk = "Minio创建bucket成功"
 )

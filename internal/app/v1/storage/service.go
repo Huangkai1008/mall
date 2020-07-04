@@ -35,9 +35,14 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		return nil, errors.Wrap(err, constant.MinioCheckBucketExistError)
 	}
 	if !exists {
-		err = s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{})
+		err := s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{})
 		if err != nil {
 			return nil, errors.Wrap(err, constant.MinioMakeBucketError)
+		}
+
+		err = s.SetReadOnlyBucketPolicy(ctx, constant.BucketName)
+		if err != nil {
+			return nil, errors.Wrap(err, constant.MinioSetPolicyError)
 		}
 		s.logger.Info(constant.MinioMakeBucketOk, zap.String("bucketName", constant.BucketName))
 	}
@@ -63,7 +68,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 	info, err := s.minioCli.PutObject(
 		ctx,
 		constant.BucketName,
-		objectName,
+		s.getObjectName(objectName),
 		file,
 		-1,
 		minio.PutObjectOptions{ContentType: fmt.Sprintln(mType)},
@@ -72,12 +77,40 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		return nil, errors.Wrap(err, constant.MinioPutObjectError)
 	}
 	return &ObjectSchema{
-		Url:          s.getUrl(constant.BucketName, objectName),
+		Url:          s.getUrl(constant.BucketName, info.Key),
 		ETag:         info.ETag,
 		LastModified: info.LastModified,
 		Location:     info.Location,
 		VersionID:    info.VersionID,
 	}, nil
+}
+
+func (s *Service) SetReadOnlyBucketPolicy(ctx context.Context, bucketName string) error {
+	policy := fmt.Sprintf(`
+    {
+		"Version": "2012-10-17",
+        "Statement": [
+            {
+            	"Effect": "Allow",
+				"Principal": {"AWS": "*"},
+ 				"Action": ["s3:GetBucketLocation", "s3:ListBucket"],
+				"Resource": "arn:aws:s3:::%[1]s"
+            },
+			{
+            	"Effect": "Allow",
+				"Principal": {"AWS": "*"},
+ 				"Action": ["s3:GetObject"],
+				"Resource": "arn:aws:s3:::%[1]s/*"
+            }
+        ]
+	}`,
+		bucketName,
+	)
+	if err := s.minioCli.SetBucketPolicy(ctx, bucketName, policy); err != nil {
+		return errors.Wrap(err, constant.MinioSetPolicyError)
+	} else {
+		return nil
+	}
 }
 
 func (s *Service) delimiter() string {
@@ -96,5 +129,5 @@ func (s *Service) getObjectName(objectName string) string {
 
 // getUrl returns the uploaded file url.
 func (s Service) getUrl(bucketName, objectName string) string {
-	return fmt.Sprintln(s.minioCli.EndpointURL()) + bucketName + objectName
+	return fmt.Sprint(s.minioCli.EndpointURL()) + "/" + bucketName + "/" + objectName
 }
