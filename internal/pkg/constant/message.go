@@ -1,6 +1,11 @@
 package constant
 
 const (
+	CloseFileError       = "关闭文件错误"
+	GetFileMimetypeError = "获取文件mimetype错误"
+)
+
+const (
 	LoadConfigError     = "读取配置错误"
 	LogConfigError      = "配置日志错误"
 	DatabaseConfigError = "配置数据库错误"

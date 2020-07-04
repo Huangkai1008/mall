@@ -15,6 +15,7 @@ import (
 	"gorm.io/gorm"
 
 	"mall/internal/app/v1/index"
+	"mall/internal/app/v1/storage"
 	"mall/internal/app/v1/user"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
@@ -146,14 +147,17 @@ func (app *Application) configureApps() error {
 	userRepository := user.NewRepository(app.logger, app.db)
 
 	// Service
+	storageService := storage.NewService(app.logger, app.minioCli)
 	userService := user.NewService(app.logger, userRepository)
 
 	// Handler
 	indexHandler := index.NewHandler()
+	storageHandler := storage.NewHandler(app.logger, storageService)
 	userHandler := user.NewHandler(app.logger, userService)
 
 	// Init router
 	indexRouter := index.NewRouter(indexHandler)
+	storageRouter := storage.NewRouter(storageHandler)
 	userRouter := user.NewRouter(userHandler)
 
 	// API router group
@@ -161,6 +165,7 @@ func (app *Application) configureApps() error {
 	v1Group := apiGroup.Group("/v1")
 	{
 		indexRouter(v1Group)
+		storageRouter(v1Group)
 		userRouter(v1Group)
 	}
 	return nil
