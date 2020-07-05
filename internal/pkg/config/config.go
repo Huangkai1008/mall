@@ -97,4 +97,5 @@ type Minio struct {
 	AccessKeyID     string
 	SecretAccessKey string
 	UseSSL          bool
+	Region          string
 }

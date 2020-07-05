@@ -147,7 +147,7 @@ func (app *Application) configureApps() error {
 	userRepository := user.NewRepository(app.logger, app.db)
 
 	// Service
-	storageService := storage.NewService(app.logger, app.minioCli)
+	storageService := storage.NewService(app.config, app.logger, app.minioCli)
 	userService := user.NewService(app.logger, userRepository)
 
 	// Handler

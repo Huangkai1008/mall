@@ -18,6 +18,7 @@ func New(opts *Options) (*minio.Client, error) {
 	minioClient, err := minio.New(opts.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(opts.AccessKeyID, opts.SecretAccessKey, ""),
 		Secure: opts.UseSSL,
+		Region: opts.Region,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, constant.MinioConfigError)

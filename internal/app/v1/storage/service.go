@@ -6,21 +6,23 @@ import (
 	"mime/multipart"
 	"time"
 
-	"github.com/gabriel-vasile/mimetype"
 	"github.com/minio/minio-go/v7"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
+	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
 )
 
 type Service struct {
+	config   *config.Config
 	logger   *zap.Logger
 	minioCli *minio.Client
 }
 
-func NewService(logger *zap.Logger, minioCli *minio.Client) *Service {
+func NewService(config *config.Config, logger *zap.Logger, minioCli *minio.Client) *Service {
 	return &Service{
+		config:   config,
 		logger:   logger.With(zap.String("type", "StorageService")),
 		minioCli: minioCli,
 	}
@@ -36,7 +38,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		return nil, errors.Wrap(err, constant.MinioCheckBucketExistError)
 	}
 	if !exists {
-		err := s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{})
+		err := s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.config.Region})
 		if err != nil {
 			return nil, errors.Wrap(err, constant.MinioMakeBucketError)
 		}
@@ -83,6 +85,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 	}, nil
 }
 
+// SetReadOnlyBucketPolicy set read-only permissions on an existing bucket.
 func (s *Service) SetReadOnlyBucketPolicy(ctx context.Context, bucketName string) error {
 	policy := fmt.Sprintf(`
     {
