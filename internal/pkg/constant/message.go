@@ -1,8 +1,7 @@
 package constant
 
 const (
-	CloseFileError       = "关闭文件错误"
-	GetFileMimetypeError = "获取文件mimetype错误"
+	CloseFileError = "关闭文件错误"
 )
 
 const (

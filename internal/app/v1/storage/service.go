@@ -26,6 +26,7 @@ func NewService(logger *zap.Logger, minioCli *minio.Client) *Service {
 	}
 }
 
+// PutObject put object to bucket.
 func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*ObjectSchema, error) {
 	ctx := context.Background()
 
@@ -59,11 +60,8 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		}
 	}(file)
 
-	// Get file mimetype
-	mType, err := mimetype.DetectReader(file)
-	if err != nil {
-		return nil, errors.Wrap(err, constant.GetFileMimetypeError)
-	}
+	// Get file content-type
+	contentType := fh.Header.Get("content-type")
 
 	info, err := s.minioCli.PutObject(
 		ctx,
@@ -71,7 +69,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		s.getObjectName(objectName),
 		file,
 		-1,
-		minio.PutObjectOptions{ContentType: fmt.Sprintln(mType)},
+		minio.PutObjectOptions{ContentType: contentType},
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, constant.MinioPutObjectError)
