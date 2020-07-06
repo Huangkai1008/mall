@@ -29,11 +29,7 @@ func (h *Handler) PutObject(c *gin.Context) {
 		return
 	}
 
-	file, err := c.FormFile("file")
-	if err != nil {
-		res.BadRequest(c, err.Error())
-		return
-	}
+	file := ocSchema.File
 	if objectSchema, err := h.service.PutObject(file.Filename, file); err != nil {
 		res.BadRequest(c, err.Error())
 		return

@@ -38,7 +38,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		return nil, errors.Wrap(err, constant.MinioCheckBucketExistError)
 	}
 	if !exists {
-		err := s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.config.Region})
+		err = s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.config.Region})
 		if err != nil {
 			return nil, errors.Wrap(err, constant.MinioMakeBucketError)
 		}
@@ -56,7 +56,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		return nil, errors.Wrap(err, constant.MinioReadFileError)
 	}
 	defer func(file multipart.File) {
-		err := file.Close()
+		err = file.Close()
 		if err != nil {
 			s.logger.Warn(constant.CloseFileError, zap.Error(err))
 		}

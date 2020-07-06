@@ -58,7 +58,7 @@ func New() (*Application, error) {
 	}
 
 	// Register Translation
-	if err := validator.RegisterTranslation(conf.Locale); err != nil {
+	if err = validator.RegisterTranslation(conf.Locale); err != nil {
 		return nil, errors.Wrap(err, constant.TransRegisterError)
 	}
 
@@ -107,7 +107,6 @@ func (app *Application) Start() error {
 		if err := app.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			app.logger.Fatal("Start HTTP server error", zap.Error(err))
 		}
-		return
 	}()
 	return nil
 }
@@ -130,16 +129,15 @@ func (app *Application) AwaitSignal() {
 	c := make(chan os.Signal, 1)
 	signal.Reset(syscall.SIGTERM, syscall.SIGINT)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
-	select {
-	case s := <-c:
-		app.logger.Info("Receive a signal", zap.String("signal", s.String()))
-		if app.httpServer != nil {
-			if err := app.Stop(); err != nil {
-				app.logger.Warn("Stop HTTP server error", zap.Error(err))
-			}
+
+	s := <-c
+	app.logger.Info("Receive a signal", zap.String("signal", s.String()))
+	if app.httpServer != nil {
+		if err := app.Stop(); err != nil {
+			app.logger.Warn("Stop HTTP server error", zap.Error(err))
 		}
-		os.Exit(0)
 	}
+	os.Exit(0)
 }
 
 func (app *Application) configureApps() error {

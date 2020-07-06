@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"mime/multipart"
 	"time"
 
 	"mall/internal/pkg/schema"
@@ -9,7 +10,7 @@ import (
 // ObjectCreateSchema is the object create schema
 type ObjectCreateSchema struct {
 	schema.BaseSchema
-	file string `form:"file" binding:"required,file"`
+	File *multipart.FileHeader `form:"file" binding:"required,file"`
 }
 
 type ObjectSchema struct {

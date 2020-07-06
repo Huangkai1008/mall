@@ -38,14 +38,13 @@ func New() (*Config, error) {
 	// Get basic configs from toml file
 	v.AddConfigPath("configs")
 	v.SetConfigType("toml")
-	if err := v.ReadInConfig(); err != nil {
-		panic(err)
+	if err = v.ReadInConfig(); err != nil {
 		return nil, err
 	}
 	// Get secure configs from dotenv file
 	v.SetConfigFile(".env")
 	v.AutomaticEnv()
-	if err := v.MergeInConfig(); err != nil {
+	if err = v.MergeInConfig(); err != nil {
 		return nil, err
 	}
 
