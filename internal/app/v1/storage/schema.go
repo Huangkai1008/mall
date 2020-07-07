@@ -14,9 +14,9 @@ type ObjectCreateSchema struct {
 }
 
 type ObjectSchema struct {
-	Url          string    // file url
-	ETag         string    `json:"etag"` // ETag message
-	LastModified time.Time // last modified time
-	Location     string    // location
-	VersionID    string    `json:"version_id"` // version id
+	Url          string    `json:"url"`           // file url
+	ETag         string    `json:"etag"`          // ETag message
+	LastModified time.Time `json:"last_modified"` // last modified time
+	Location     string    `json:"location"`      // location
+	VersionID    string    `json:"version_id"`    // version id
 }
