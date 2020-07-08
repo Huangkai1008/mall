@@ -22,7 +22,7 @@ import (
 	gormApi "mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/middleware"
-	minioApi "mall/internal/pkg/minio"
+	minioApi "mall/internal/pkg/storage/minio"
 	"mall/internal/pkg/validator"
 )
 
