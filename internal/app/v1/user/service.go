@@ -3,7 +3,7 @@ package user
 import (
 	"go.uber.org/zap"
 
-	"golang.org/x/crypto/bcrypt"
+	"mall/internal/pkg/util/encrypt"
 )
 
 type Service struct {
@@ -21,12 +21,12 @@ func NewService(logger *zap.Logger, repo Repository) *Service {
 // Create User.
 func (s *Service) Create(user *User) (*User, error) {
 	// Generate hash password to encrypt.
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
+	hashPassword, err := encrypt.GeneratePasswordHash(user.Password)
 	if err != nil {
 		return nil, err
 	}
-	user.Password = string(hashPassword)
 
+	user.Password = hashPassword
 	err = s.repo.Create(user)
 	return user, err
 }
