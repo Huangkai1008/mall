@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"mall/internal/app/v1/product"
 
 	"mall/internal/app/v1/user"
 	"mall/internal/pkg/config"
@@ -51,5 +52,8 @@ func configure(db *gorm.DB, opts *Options) error {
 }
 
 func autoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(&user.User{})
+	return db.AutoMigrate(
+		&user.User{},
+		&product.Brand{}, &product.Store{}, &product.Category{},
+	)
 }

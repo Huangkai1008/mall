@@ -5,7 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
-	res "mall/internal/pkg/util/response"
+	resp "mall/internal/pkg/util/response"
 )
 
 type Handler struct {
@@ -26,7 +26,7 @@ func (h *Handler) Register(c *gin.Context) {
 	var registerSchema RegisterSchema
 	if err := c.ShouldBind(&registerSchema); err != nil {
 		errs := err.(validator.ValidationErrors)
-		res.BadEntityRequest(c, registerSchema.Validate(errs))
+		resp.BadEntityRequest(c, registerSchema.Validate(errs))
 		return
 	}
 
@@ -36,9 +36,9 @@ func (h *Handler) Register(c *gin.Context) {
 		Password: registerSchema.Password,
 	}
 	if user, err := h.service.Create(&user); err != nil {
-		res.BadRequest(c, err.Error())
+		resp.BadRequest(c, err.Error())
 		return
 	} else {
-		res.Created(c, user)
+		resp.Created(c, user)
 	}
 }
