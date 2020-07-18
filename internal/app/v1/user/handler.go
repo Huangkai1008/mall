@@ -39,6 +39,6 @@ func (h *Handler) Register(c *gin.Context) {
 		res.BadRequest(c, err.Error())
 		return
 	} else {
-		res.Created(c, user.ToSchema())
+		res.Created(c, user)
 	}
 }
