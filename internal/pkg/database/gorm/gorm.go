@@ -55,5 +55,6 @@ func autoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&user.User{},
 		&product.Brand{}, &product.Store{}, &product.Category{},
+		&product.Spu{},
 	)
 }
