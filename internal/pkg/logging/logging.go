@@ -4,20 +4,14 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/wire"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-
-	"mall/internal/pkg/config"
 )
 
-// Options contains the logger options.
-type Options struct {
-	*config.Config
-}
-
-// New constructs a new Logger from the provided Options.
-func New(opts *Options) (*zap.Logger, error) {
+// New constructs a new logger from the provided Options.
+func New(o *Options) (*zap.Logger, error) {
 	var (
 		err    error
 		logger *zap.Logger
@@ -39,12 +33,12 @@ func New(opts *Options) (*zap.Logger, error) {
 	}
 
 	atomicLevel := zap.NewAtomicLevel()
-	atomicLevel.SetLevel(zapcore.Level(opts.Level))
+	atomicLevel.SetLevel(zapcore.Level(o.Level))
 
 	cores := make([]zapcore.Core, 0, 2)
 	je := zapcore.NewJSONEncoder(encoderConfig)
 	hook := lumberjack.Logger{
-		Filename:   opts.FileName,
+		Filename:   o.FileName,
 		MaxSize:    128,
 		MaxBackups: 30,
 		MaxAge:     30,
@@ -53,7 +47,7 @@ func New(opts *Options) (*zap.Logger, error) {
 	fileCore := zapcore.NewCore(je, zapcore.AddSync(&hook), atomicLevel)
 	cores = append(cores, fileCore)
 	var options []zap.Option
-	if opts.RunMode == config.DebugMode {
+	if o.Stdout {
 		ce := zapcore.NewConsoleEncoder(encoderConfig)
 		consoleCore := zapcore.NewCore(ce, zapcore.AddSync(os.Stdout), atomicLevel)
 		cores = append(cores, consoleCore)
@@ -74,3 +68,5 @@ func New(opts *Options) (*zap.Logger, error) {
 func jsonTimeEncoder(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
 	encoder.AppendString(t.Format("2006/01/05 15:04:05:000"))
 }
+
+var ProviderSet = wire.NewSet(New, NewOptions)
