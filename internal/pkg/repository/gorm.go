@@ -3,38 +3,55 @@ package repository
 import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+
+	metav1 "mall/pkg/meta/v1"
 )
 
 type GormRepository struct {
-	Logger *zap.Logger // repo logger
-	Db     *gorm.DB    // repo db connection
+	// gorm db connection.
+	db *gorm.DB
+
+	// logger for gorm.
+	logger *zap.Logger // repo logger
 }
 
-func (r *GormRepository) GetAll(conditions interface{}) (records []*interface{}, err error) {
-	err = r.Db.Where(conditions).Find(&records).Error
+func NewGormRepository(db *gorm.DB, logger *zap.Logger) *GormRepository {
+	return &GormRepository{
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (r *GormRepository) Get(id int) (record metav1.Resource, err error) {
+	err = r.db.First(&record, id).Error
 	return
 }
 
-func (r *GormRepository) GetOne(conditions interface{}) (record *interface{}, err error) {
-	err = r.Db.Where(conditions).First(&record).Error
+func (r *GormRepository) GetOne(conditions interface{}) (record metav1.Resource, err error) {
+	err = r.db.Where(conditions).First(&record).Error
+	return
+}
+
+func (r *GormRepository) GetAll(conditions interface{}) (records []metav1.Resource, err error) {
+	err = r.db.Where(conditions).Find(&records).Error
 	return
 }
 
 func (r *GormRepository) Exist(conditions interface{}) (bool, error) {
 	var (
 		err    error
-		record interface{}
+		record metav1.ObjectMeta
 	)
 
-	err = r.Db.Where(conditions).Limit(1).Find(&record).Error
+	err = r.db.Where(conditions).Limit(1).Find(&record).Error
 	if err != nil {
 		return false, err
 	} else {
-		return record == nil, err
+		return record == metav1.ObjectMeta{}, err
 	}
 }
 
-func (r *GormRepository) Create(record interface{}) error {
-	err := r.Db.Create(record).Error
+func (r *GormRepository) Create(record metav1.Resource) error {
+	err := r.db.Create(record).Error
 	return err
 }
