@@ -9,6 +9,8 @@ const (
 	LogConfigError      = "配置日志错误"
 	DatabaseConfigError = "配置数据库错误"
 	AppConfigError      = "配置应用错误"
+
+	AppConfigOk = "配置成功"
 )
 
 const (
@@ -16,6 +18,11 @@ const (
 	GetConnectionError   = "获取当前数据库连接出错"
 	ORMConfigError       = "配置ORM错误"
 	DatabaseMigrateError = "数据库迁移出错"
+)
+
+const (
+	HTTPServerStartError = "HTTP服务启动出错"
+	HTTPServerStopError  = "HTTP服务停止出错"
 )
 
 const (
@@ -32,4 +39,8 @@ const (
 	MinioSetPolicyError        = "Minio创建Policy失败"
 
 	MinioMakeBucketOk = "Minio创建bucket成功"
+)
+
+const (
+	UserNotExistError = "用户不存在"
 )
