@@ -1,24 +1,20 @@
 package gorm
 
 import (
+	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"mall/internal/app/v1/product"
 
+	"mall/internal/app/v1/product"
 	"mall/internal/app/v1/user"
-	"mall/internal/pkg/config"
 	"mall/internal/pkg/constant"
 )
 
-type Options struct {
-	*config.Config
-}
-
 // New returns a new gorm.DB instance with options.
-func New(opts *Options) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(opts.DSN()), &gorm.Config{
+func New(o *Options) (*gorm.DB, error) {
+	db, err := gorm.Open(mysql.Open(o.DSN()), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
@@ -27,11 +23,11 @@ func New(opts *Options) (*gorm.DB, error) {
 		return nil, errors.Wrap(err, constant.DatabaseConnectError)
 	}
 
-	if err = configure(db, opts); err != nil {
+	if err = configure(db, o); err != nil {
 		return nil, errors.Wrap(err, constant.ORMConfigError)
 	}
 
-	if opts.EnableAutoMigrate {
+	if o.EnableAutoMigrate {
 		if err = autoMigrate(db); err != nil {
 			return nil, errors.Wrap(err, constant.DatabaseMigrateError)
 		}
@@ -58,3 +54,5 @@ func autoMigrate(db *gorm.DB) error {
 		&product.Spu{},
 	)
 }
+
+var ProviderSet = wire.NewSet(New, NewOptions)
