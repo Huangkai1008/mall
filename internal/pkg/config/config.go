@@ -2,12 +2,9 @@ package config
 
 import (
 	"fmt"
-	"time"
-
+	"github.com/google/wire"
 	"github.com/spf13/viper"
 )
-
-type RunMode string
 
 const (
 	DebugMode   = "debug"
@@ -15,32 +12,22 @@ const (
 	ReleaseMode = "release"
 )
 
-// Config contains all the configs in the application.
-type Config struct {
-	Version string
-	RunMode string
-	Locale  string
-	Log
-	HTTP
-	Gorm
-	Database
-	Minio
-}
-
-// New returns new Config instance.
-func New() (*Config, error) {
+// New returns a new viper config.
+func New(path string) (*viper.Viper, error) {
 	var (
-		err    error
-		config *Config
+		err error
+		v   = viper.New()
 	)
 
-	v := viper.New()
-	// Get basic configs from toml file
-	v.AddConfigPath("configs")
+	// Get basic configs from toml file.
 	v.SetConfigType("toml")
-	if err = v.ReadInConfig(); err != nil {
+	v.AddConfigPath(".")
+	if err = v.ReadInConfig(); err == nil {
+		fmt.Printf("Use config file -> %s\n", v.ConfigFileUsed())
+	} else {
 		return nil, err
 	}
+
 	// Get secure configs from dotenv file
 	v.SetConfigFile(".env")
 	v.AutomaticEnv()
@@ -48,53 +35,8 @@ func New() (*Config, error) {
 		return nil, err
 	}
 
-	if err = v.Unmarshal(&config); err != nil {
-		return nil, err
-	}
-	return config, err
+	v.WatchConfig()
+	return v, err
 }
 
-type Log struct {
-	Level    int    // logging level
-	FileName string // logging filename
-}
-
-type HTTP struct {
-	HttpHost     string
-	HttpPort     int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-}
-
-// Addr return the TCP address in the form "host:port"
-func (h HTTP) Addr() string {
-	return fmt.Sprintf("%s:%d", h.HttpHost, h.HttpPort)
-}
-
-type Gorm struct {
-	MaxIdleConnections int
-	MaxOpenConnections int
-	EnableAutoMigrate  bool
-}
-
-type Database struct {
-	User       string
-	Password   string
-	Host       string
-	Port       int
-	DBName     string
-	Parameters string
-}
-
-func (d Database) DSN() string {
-	const dsn = "%s:%s@tcp(%s:%d)/%s?%s"
-	return fmt.Sprintf(dsn, d.User, d.Password, d.Host, d.Port, d.DBName, d.Parameters)
-}
-
-type Minio struct {
-	Endpoint        string
-	AccessKeyID     string
-	SecretAccessKey string
-	UseSSL          bool
-	Region          string
-}
+var ProviderSet = wire.NewSet(New)
