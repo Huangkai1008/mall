@@ -1,4 +1,4 @@
-package user
+package schema
 
 import (
 	"mall/internal/pkg/schema"
@@ -12,9 +12,14 @@ type RegisterSchema struct {
 	Password string `json:"password" binding:"required,max=64"`
 }
 
-// Schema is the user return schema.
-type Schema struct {
+// LoginSchema is the user login schema.
+type LoginSchema struct {
 	schema.BaseSchema
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	Username string `json:"username" binding:"required,max=127"`
+	Password string `json:"password" binding:"required,max=64"`
+}
+
+type TokenSchema struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }

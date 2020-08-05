@@ -1,18 +1,24 @@
-Version = '0.1.0'
-RunMode = 'debug'
-Locale = 'zh'
+# 服务配置
+[server]
+version = '0.1.0'
+locale = 'zh'
 
+# 日志配置
 [log]
 Level = 0
-FileName = 'logs/mall.log'
+FileName = 'logs/user.log'
 
+
+# HTTP配置
 [http]
 HttpHost = '127.0.0.1'
 HttpPort = 8000
 ReadTimeout = 60
 WriteTimeout = 60
 
+# Gorm配置
 [gorm]
 MaxIdleConnections = 10
 MaxOpenConnections = 100
 EnableAutoMigrate = true
+
