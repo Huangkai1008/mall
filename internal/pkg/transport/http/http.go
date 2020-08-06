@@ -39,6 +39,7 @@ func New(o *Options, logger *zap.Logger, router *gin.Engine) *Server {
 
 // Start http server.
 func (s *Server) Start() error {
+	s.httpServer.Handler = s.router
 	s.logger.Info("HTTP server starting ...", zap.String("addr", s.o.Addr()))
 
 	go func() {

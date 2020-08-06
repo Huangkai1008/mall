@@ -10,6 +10,12 @@ import (
 	"mall/internal/pkg/constant"
 )
 
+const (
+	DebugMode   = "debug"
+	TestMode    = "testing"
+	ReleaseMode = "release"
+)
+
 // Options for the HTTP server.
 type Options struct {
 	// The hostname of the HTTP server.
@@ -24,7 +30,7 @@ type Options struct {
 	// Write timeout for the HTTP server.
 	WriteTimeout time.Duration
 
-	// Mode of the HTTP server.
+	// Mode of the HTTP server. Includes DebugMode, TestMode, and ReleaseMode.
 	Mode string
 }
 
