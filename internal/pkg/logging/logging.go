@@ -5,9 +5,12 @@ import (
 	"time"
 
 	"github.com/google/wire"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+
+	"mall/internal/pkg/constant"
 )
 
 // New constructs a new logger from the provided Options.
@@ -61,7 +64,11 @@ func New(o *Options) (*zap.Logger, error) {
 
 	zap.ReplaceGlobals(logger)
 
-	return logger, err
+	if err == nil {
+		return logger, nil
+	} else {
+		return nil, errors.Wrap(err, constant.LogConfigError)
+	}
 }
 
 // jsonTimeEncoder is the custom json time encoder.

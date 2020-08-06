@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"mall/internal/pkg/validator"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,8 +17,6 @@ import (
 	"mall/internal/pkg/transport/http"
 	"mall/pkg/app"
 )
-
-type AppName string
 
 // Application is the application service.
 // It contains all the services and configurations.
@@ -36,12 +35,17 @@ type Application struct {
 type Option func(app *Application) error
 
 // New returns a new Application.
-func New(name string, logger *zap.Logger, options ...Option) (*Application, error) {
+func New(name, locale string, logger *zap.Logger, options ...Option) (*Application, error) {
+
 	a := &Application{
 		App: app.App{
 			Name: name,
 		},
 		logger: logger.With(zap.String("type", "Application")),
+	}
+
+	if err := validator.RegisterTranslation(locale); err != nil {
+		return nil, errors.Wrap(err, constant.TransRegisterError)
 	}
 
 	for _, option := range options {
@@ -77,65 +81,12 @@ func WithMinioCli(c *minio.Client) Option {
 	}
 }
 
-//// New returns a new Application.
-//func New() (*Application, error) {
-//	// Config
-//	conf, err := config.New()
-//	if err != nil {
-//		return nil, errors.Wrap(err, constant.LoadConfigError)
-//	}
-//
-//	// Logging
-//	logger, err := logging.New(&logging.Options{Config: conf})
-//	if err != nil {
-//		return nil, errors.Wrap(err, constant.LogConfigError)
-//	}
-//
-//	// Database
-//	db, err := gormApi.New(&gormApi.Options{Config: conf})
-//	if err != nil {
-//		return nil, errors.Wrap(err, constant.DatabaseConfigError)
-//	}
-//
-//	// Register Translation
-//	if err = validator.RegisterTranslation(conf.Locale); err != nil {
-//		return nil, errors.Wrap(err, constant.TransRegisterError)
-//	}
-//
-//	// Router
-//	gin.SetMode(conf.RunMode)
-//	r := gin.New()
-//	r.Use(gin.Recovery())
-//	r.Use(middleware.LoggerMiddleware(logger))
-//
-//	// Minio Client
-//	minioCli, err := minioApi.New(&minioApi.Options{Config: conf})
-//	if err != nil {
-//		return nil, errors.Wrap(err, constant.MinioConfigError)
-//	}
-//
-//	// Application
-//	application := &Application{
-//		config:   conf,
-//		logger:   logger.With(zap.String("type", "Application")),
-//		db:       db,
-//		router:   r,
-//		minioCli: minioCli,
-//	}
-//
-//	// Add Apps
-//	if application.configureApps() != nil {
-//		return nil, errors.Wrap(err, constant.AppConfigError)
-//	}
-//
-//	return application, nil
-//}
-
 // Start Application.
 func (a *Application) Start() error {
 	if err := a.httpServer.Start(); err != nil {
 		return errors.Wrap(err, constant.HTTPServerStartError)
 	}
+	a.logger.Info("Application Started", zap.String("name", a.Name))
 	return nil
 }
 
@@ -163,32 +114,3 @@ func (a *Application) AwaitSignal() {
 	}
 	os.Exit(0)
 }
-
-//func (app *Application) configureApps() error {
-//	// Repository
-//	userRepository := user.NewRepository(app.logger, app.db)
-//
-//	// Service
-//	storageService := storage.NewService(app.config, app.logger, app.minioCli)
-//	userService := user.NewService(app.logger, userRepository)
-//
-//	// Handler
-//	indexHandler := index.NewHandler()
-//	storageHandler := storage.NewHandler(app.logger, storageService)
-//	userHandler := user.NewHandler(app.logger, userService)
-//
-//	// Init router
-//	indexRouter := index.NewRouter(indexHandler)
-//	storageRouter := storage.NewRouter(storageHandler)
-//	userRouter := user.NewRouter(userHandler)
-//
-//	// API router group
-//	apiGroup := app.router.Group("/api")
-//	v1Group := apiGroup.Group("/v1")
-//	{
-//		indexRouter(v1Group)
-//		storageRouter(v1Group)
-//		userRouter(v1Group)
-//	}
-//	return nil
-//}

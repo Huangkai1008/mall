@@ -7,13 +7,11 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 
-	"mall/internal/app/v1/product"
-	"mall/internal/app/v1/user"
 	"mall/internal/pkg/constant"
 )
 
 // New returns a new gorm.DB instance with options.
-func New(o *Options) (*gorm.DB, error) {
+func New(o *Options, tables []interface{}) (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(o.DSN()), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
@@ -28,7 +26,7 @@ func New(o *Options) (*gorm.DB, error) {
 	}
 
 	if o.EnableAutoMigrate {
-		if err = autoMigrate(db); err != nil {
+		if err = db.AutoMigrate(tables...); err != nil {
 			return nil, errors.Wrap(err, constant.DatabaseMigrateError)
 		}
 	}
@@ -37,22 +35,14 @@ func New(o *Options) (*gorm.DB, error) {
 }
 
 // configure gorm.
-func configure(db *gorm.DB, opts *Options) error {
+func configure(db *gorm.DB, o *Options) error {
 	sqlDB, err := db.DB()
 	if err != nil {
 		return errors.Wrap(err, constant.GetConnectionError)
 	}
-	sqlDB.SetMaxIdleConns(opts.MaxIdleConnections)
-	sqlDB.SetMaxOpenConns(opts.MaxOpenConnections)
+	sqlDB.SetMaxIdleConns(o.MaxIdleConnections)
+	sqlDB.SetMaxOpenConns(o.MaxOpenConnections)
 	return nil
-}
-
-func autoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(
-		&user.User{},
-		&product.Brand{}, &product.Store{}, &product.Category{},
-		&product.Spu{},
-	)
 }
 
 var ProviderSet = wire.NewSet(New, NewOptions)

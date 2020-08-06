@@ -48,7 +48,8 @@ func CreateApp(cf string) (*application.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	db, err := gorm.New(gormOptions)
+	v := _wireValue
+	db, err := gorm.New(gormOptions, v)
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +73,10 @@ func CreateApp(cf string) (*application.Application, error) {
 	}
 	return applicationApplication, nil
 }
+
+var (
+	_wireValue = user.Tables
+)
 
 // wire.go:
 
