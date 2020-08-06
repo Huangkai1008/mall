@@ -1,5 +1,6 @@
 # 服务配置
-[server]
+[app]
+name = 'user-service'
 version = '0.1.0'
 locale = 'zh'
 
@@ -7,17 +8,17 @@ locale = 'zh'
 [log]
 Level = 0
 FileName = 'logs/user.log'
-
+Stdout = true
 
 # HTTP配置
 [http]
-HttpHost = '127.0.0.1'
-HttpPort = 8000
+Host = '127.0.0.1'
+Port = 5001
 ReadTimeout = 60
 WriteTimeout = 60
 
-# Gorm配置
-[gorm]
+# Database配置
+[database]
 MaxIdleConnections = 10
 MaxOpenConnections = 100
 EnableAutoMigrate = true
