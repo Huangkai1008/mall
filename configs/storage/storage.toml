@@ -1,0 +1,25 @@
+# 服务配置
+[app]
+name = 'storage-service'
+version = '0.1.0'
+locale = 'zh'
+
+# 日志配置
+[log]
+Level = 0
+FileName = 'logs/storage.log'
+Stdout = true
+
+# HTTP配置
+[http]
+Host = '127.0.0.1'
+Port = 5002
+ReadTimeout = 60
+WriteTimeout = 60
+
+# Database配置
+[database]
+MaxIdleConnections = 10
+MaxOpenConnections = 100
+EnableAutoMigrate = true
+

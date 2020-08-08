@@ -1,4 +1,4 @@
-package storage
+package service
 
 import (
 	"context"
@@ -6,30 +6,32 @@ import (
 	"mime/multipart"
 	"time"
 
+	"github.com/google/wire"
 	"github.com/minio/minio-go/v7"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"mall/internal/pkg/config"
+	"mall/internal/app/v1/storage/schema"
 	"mall/internal/pkg/constant"
+	minioCli "mall/internal/pkg/storage/minio"
 )
 
 type Service struct {
-	config   *config.Config
+	o        *minioCli.Options
 	logger   *zap.Logger
 	minioCli *minio.Client
 }
 
-func NewService(config *config.Config, logger *zap.Logger, minioCli *minio.Client) *Service {
+func NewService(o *minioCli.Options, logger *zap.Logger, minioCli *minio.Client) *Service {
 	return &Service{
-		config:   config,
+		o:        o,
 		logger:   logger.With(zap.String("type", "StorageService")),
 		minioCli: minioCli,
 	}
 }
 
 // PutObject put object to bucket.
-func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*ObjectSchema, error) {
+func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*schema.ObjectSchema, error) {
 	ctx := context.Background()
 
 	// Check to see if we already own this bucket, if not exists, make new bucket.
@@ -38,7 +40,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 		return nil, errors.Wrap(err, constant.MinioCheckBucketExistError)
 	}
 	if !exists {
-		err = s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.config.Region})
+		err = s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.o.Region})
 		if err != nil {
 			return nil, errors.Wrap(err, constant.MinioMakeBucketError)
 		}
@@ -76,7 +78,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*Objec
 	if err != nil {
 		return nil, errors.Wrap(err, constant.MinioPutObjectError)
 	}
-	return &ObjectSchema{
+	return &schema.ObjectSchema{
 		Url:          s.getUrl(constant.BucketName, info.Key),
 		ETag:         info.ETag,
 		LastModified: info.LastModified,
@@ -132,3 +134,5 @@ func (s *Service) getObjectName(objectName string) string {
 func (s Service) getUrl(bucketName, objectName string) string {
 	return fmt.Sprint(s.minioCli.EndpointURL()) + "/" + bucketName + "/" + objectName
 }
+
+var ProviderSet = wire.NewSet(NewService)
