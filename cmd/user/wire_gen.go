@@ -16,7 +16,6 @@ import (
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
-	"mall/internal/pkg/storage/minio"
 	"mall/internal/pkg/transport/http"
 )
 
@@ -59,15 +58,7 @@ func CreateApp(cf string) (*application.Application, error) {
 	group := router.NewRouter(handlerHandler)
 	engine := http.NewRouter(httpOptions, logger, group)
 	server := http.New(httpOptions, logger, engine)
-	minioOptions, err := minio.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	client, err := minio.New(minioOptions)
-	if err != nil {
-		return nil, err
-	}
-	applicationApplication, err := user.New(userOptions, logger, server, client)
+	applicationApplication, err := user.New(userOptions, logger, server)
 	if err != nil {
 		return nil, err
 	}
@@ -80,4 +71,4 @@ var (
 
 // wire.go:
 
-var providerSet = wire.NewSet(user.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, minio.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet)
+var providerSet = wire.NewSet(user.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet)

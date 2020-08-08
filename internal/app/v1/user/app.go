@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/google/wire"
-	"github.com/minio/minio-go/v7"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -36,14 +35,12 @@ func New(
 	o *Options,
 	logger *zap.Logger,
 	httpServer *http.Server,
-	minioCli *minio.Client,
 ) (*application.Application, error) {
 	return application.New(
 		o.Name,
 		o.Locale,
 		logger,
 		application.WithHttpServer(httpServer),
-		application.WithMinioCli(minioCli),
 	)
 }
 

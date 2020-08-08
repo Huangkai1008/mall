@@ -13,7 +13,6 @@ import (
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
-	"mall/internal/pkg/storage/minio"
 	"mall/internal/pkg/transport/http"
 )
 
@@ -22,7 +21,6 @@ var providerSet = wire.NewSet(
 	config.ProviderSet,
 	logging.ProviderSet,
 	http.ProviderSet,
-	minio.ProviderSet,
 	gorm.ProviderSet,
 	router.ProviderSet,
 	handler.ProviderSet,
