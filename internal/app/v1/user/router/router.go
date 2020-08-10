@@ -12,7 +12,7 @@ func NewRouter(h *handler.Handler) router.Group {
 	return func(r *gin.RouterGroup) {
 		userApi := r.Group("/users")
 		{
-			userApi.POST("register", h.Register)
+			userApi.POST("", h.Create)
 		}
 	}
 }

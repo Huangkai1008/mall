@@ -24,19 +24,20 @@ func NewHandler(logger *zap.Logger, service *service.Service) *Handler {
 	}
 }
 
-func (h *Handler) Register(c *gin.Context) {
+// Create User
+func (h *Handler) Create(c *gin.Context) {
 	// Validate
-	var registerSchema schema.RegisterSchema
-	if err := c.ShouldBind(&registerSchema); err != nil {
+	var createSchema schema.CreateSchema
+	if err := c.ShouldBind(&createSchema); err != nil {
 		errs := err.(validator.ValidationErrors)
-		resp.BadEntityRequest(c, registerSchema.Validate(errs))
+		resp.BadEntityRequest(c, createSchema.Validate(errs))
 		return
 	}
 
 	u := user.User{
-		Username: registerSchema.Username,
-		Email:    registerSchema.Email,
-		Password: registerSchema.Password,
+		Username: createSchema.Username,
+		Email:    createSchema.Email,
+		Password: createSchema.Password,
 	}
 	if u, err := h.service.Create(&u); err != nil {
 		resp.BadRequest(c, err.Error())

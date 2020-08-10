@@ -4,8 +4,8 @@ import (
 	"mall/internal/pkg/schema"
 )
 
-// RegisterSchema is the user register schema.
-type RegisterSchema struct {
+// CreateSchema is the user create schema.
+type CreateSchema struct {
 	schema.BaseSchema
 	Username string `json:"username" binding:"required,max=127"`
 	Email    string `json:"email" binding:"required,email,max=127"`
