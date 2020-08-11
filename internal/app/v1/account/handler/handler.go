@@ -24,9 +24,8 @@ func NewHandler(logger *zap.Logger, service *service.Service) *Handler {
 	}
 }
 
-// Create Account
+// Create Account with register action.
 func (h *Handler) Create(c *gin.Context) {
-	// Validate
 	var createSchema schema.CreateSchema
 	if err := c.ShouldBind(&createSchema); err != nil {
 		errs := err.(validator.ValidationErrors)
@@ -34,16 +33,16 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	u := account.Account{
+	a := account.Account{
 		Username: createSchema.Username,
 		Email:    createSchema.Email,
 		Password: createSchema.Password,
 	}
-	if u, err := h.service.Create(&u); err != nil {
+	if a, err := h.service.Create(&a); err != nil {
 		resp.BadRequest(c, err.Error())
 		return
 	} else {
-		resp.Created(c, u)
+		resp.Created(c, a)
 	}
 }
 

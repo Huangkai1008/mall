@@ -10,7 +10,7 @@ import (
 
 func NewRouter(h *handler.Handler) router.Group {
 	return func(r *gin.RouterGroup) {
-		userApi := r.Group("/users")
+		userApi := r.Group("/accounts")
 		{
 			userApi.POST("", h.Create)
 		}
