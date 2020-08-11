@@ -1,13 +1,13 @@
 # 服务配置
 [app]
-name = 'user-service'
+name = 'account-service'
 version = '0.1.0'
 locale = 'zh'
 
 # 日志配置
 [log]
 Level = 0
-FileName = 'logs/user.log'
+FileName = 'logs/account.log'
 Stdout = true
 
 # HTTP配置

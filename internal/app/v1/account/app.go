@@ -1,4 +1,4 @@
-package user
+package account
 
 import (
 	"github.com/google/wire"
@@ -30,7 +30,7 @@ func NewOptions(v *viper.Viper, logger *zap.Logger) (*Options, error) {
 	return o, err
 }
 
-// New returns a new user application.
+// New returns a new account application.
 func New(
 	o *Options,
 	logger *zap.Logger,
@@ -44,5 +44,5 @@ func New(
 	)
 }
 
-var Tables = []interface{}{&User{}}
+var Tables = []interface{}{&Account{}}
 var ProviderSet = wire.NewSet(New, NewOptions, wire.NewSet(wire.Value(Tables)))

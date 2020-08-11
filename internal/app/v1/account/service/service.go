@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/google/wire"
 	"go.uber.org/zap"
-	"mall/internal/app/v1/user"
-	"mall/internal/app/v1/user/repository"
+	"mall/internal/app/v1/account"
+	"mall/internal/app/v1/account/repository"
 	"mall/internal/pkg/util/encrypt"
 )
 
@@ -20,19 +20,19 @@ func NewService(logger *zap.Logger, repo repository.Repository) *Service {
 	}
 }
 
-func (s *Service) Create(user *user.User) (*user.User, error) {
+func (s *Service) Create(account *account.Account) (*account.Account, error) {
 	// Generate hash password to encrypt.
-	hashPassword, err := encrypt.GeneratePasswordHash(user.Password)
+	hashPassword, err := encrypt.GeneratePasswordHash(account.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	user.Password = hashPassword
-	err = s.repo.Create(user)
-	return user, err
+	account.Password = hashPassword
+	err = s.repo.Create(account)
+	return account, err
 }
 
-func (s *Service) validatePassword(user *user.User, password string) (bool, error) {
+func (s *Service) validatePassword(user *account.Account, password string) (bool, error) {
 	hashPassword, err := encrypt.GeneratePasswordHash(password)
 	if err != nil {
 		return false, err

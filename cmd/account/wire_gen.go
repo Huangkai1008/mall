@@ -7,11 +7,11 @@ package main
 
 import (
 	"github.com/google/wire"
-	"mall/internal/app/v1/user"
-	"mall/internal/app/v1/user/handler"
-	"mall/internal/app/v1/user/repository"
-	"mall/internal/app/v1/user/router"
-	"mall/internal/app/v1/user/service"
+	"mall/internal/app/v1/account"
+	"mall/internal/app/v1/account/handler"
+	"mall/internal/app/v1/account/repository"
+	"mall/internal/app/v1/account/router"
+	"mall/internal/app/v1/account/service"
 	"mall/internal/pkg/application"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
@@ -35,7 +35,7 @@ func CreateApp(cf string) (*application.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	userOptions, err := user.NewOptions(viper, logger)
+	accountOptions, err := account.NewOptions(viper, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func CreateApp(cf string) (*application.Application, error) {
 	group := router.NewRouter(handlerHandler)
 	engine := http.NewRouter(httpOptions, logger, group)
 	server := http.New(httpOptions, logger, engine)
-	applicationApplication, err := user.New(userOptions, logger, server)
+	applicationApplication, err := account.New(accountOptions, logger, server)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +66,9 @@ func CreateApp(cf string) (*application.Application, error) {
 }
 
 var (
-	_wireValue = user.Tables
+	_wireValue = account.Tables
 )
 
 // wire.go:
 
-var providerSet = wire.NewSet(user.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet)
+var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet)

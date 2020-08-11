@@ -4,11 +4,11 @@ package main
 
 import (
 	"github.com/google/wire"
-	"mall/internal/app/v1/user"
-	"mall/internal/app/v1/user/handler"
-	"mall/internal/app/v1/user/repository"
-	"mall/internal/app/v1/user/router"
-	"mall/internal/app/v1/user/service"
+	"mall/internal/app/v1/account"
+	"mall/internal/app/v1/account/handler"
+	"mall/internal/app/v1/account/repository"
+	"mall/internal/app/v1/account/router"
+	"mall/internal/app/v1/account/service"
 	"mall/internal/pkg/application"
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
@@ -17,7 +17,7 @@ import (
 )
 
 var providerSet = wire.NewSet(
-	user.ProviderSet,
+	account.ProviderSet,
 	config.ProviderSet,
 	logging.ProviderSet,
 	http.ProviderSet,

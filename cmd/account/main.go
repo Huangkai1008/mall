@@ -2,7 +2,7 @@ package main
 
 import "flag"
 
-var configFile = flag.String("f", "user", "set config file which viper will loading.")
+var configFile = flag.String("f", "account", "set config file which viper will loading.")
 
 func main() {
 	flag.Parse()

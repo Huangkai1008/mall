@@ -21,7 +21,7 @@ type repository struct {
 	*repo.GormRepository
 }
 
-// NewRepository returns new user Repository.
+// NewRepository returns new account Repository.
 func NewRepository(logger *zap.Logger, db *gorm.DB) Repository {
 	return &repository{
 		repo.NewGormRepository(db, logger),

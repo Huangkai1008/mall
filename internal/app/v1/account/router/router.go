@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 
-	"mall/internal/app/v1/user/handler"
+	"mall/internal/app/v1/account/handler"
 	"mall/internal/pkg/router"
 )
 

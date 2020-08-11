@@ -4,7 +4,7 @@ import (
 	"mall/internal/pkg/schema"
 )
 
-// CreateSchema is the user create schema.
+// CreateSchema is the account create schema.
 type CreateSchema struct {
 	schema.BaseSchema
 	Username string `json:"username" binding:"required,max=127"`
@@ -12,7 +12,7 @@ type CreateSchema struct {
 	Password string `json:"password" binding:"required,max=64"`
 }
 
-// LoginSchema is the user login schema.
+// LoginSchema is the account login schema.
 type LoginSchema struct {
 	schema.BaseSchema
 	Username string `json:"username" binding:"required,max=127"`

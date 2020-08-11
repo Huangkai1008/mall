@@ -1,12 +1,12 @@
-package user
+package account
 
 import (
 	"gorm.io/plugin/soft_delete"
 	metav1 "mall/pkg/meta/v1"
 )
 
-// User represents a user restful resource.
-type User struct {
+// Account represents a account restful resource.
+type Account struct {
 	metav1.ObjectMeta
 
 	// Required: true

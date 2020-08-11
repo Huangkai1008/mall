@@ -6,9 +6,9 @@ import (
 	"github.com/google/wire"
 	"go.uber.org/zap"
 
-	"mall/internal/app/v1/user"
-	"mall/internal/app/v1/user/schema"
-	"mall/internal/app/v1/user/service"
+	"mall/internal/app/v1/account"
+	"mall/internal/app/v1/account/schema"
+	"mall/internal/app/v1/account/service"
 	resp "mall/internal/pkg/util/response"
 )
 
@@ -24,7 +24,7 @@ func NewHandler(logger *zap.Logger, service *service.Service) *Handler {
 	}
 }
 
-// Create User
+// Create Account
 func (h *Handler) Create(c *gin.Context) {
 	// Validate
 	var createSchema schema.CreateSchema
@@ -34,7 +34,7 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	u := user.User{
+	u := account.Account{
 		Username: createSchema.Username,
 		Email:    createSchema.Email,
 		Password: createSchema.Password,
