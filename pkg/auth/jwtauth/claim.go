@@ -1,6 +1,10 @@
 package jwtauth
 
-import "github.com/golang-jwt/jwt/v4"
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+)
 
 type TokenType int
 
@@ -25,4 +29,9 @@ type Claims struct {
 	TokenType TokenType
 
 	jwt.RegisteredClaims
+}
+
+// HasExpired returns true if the token has expired.
+func (c *Claims) HasExpired() bool {
+	return c.VerifyExpiresAt(time.Now(), true)
 }
