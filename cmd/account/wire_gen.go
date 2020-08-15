@@ -52,10 +52,10 @@ func CreateApp(cf string) (*application.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	repositoryRepository := repository.NewRepository(logger, db)
-	serviceService := service.NewService(logger, repositoryRepository)
-	handlerHandler := handler.NewHandler(logger, serviceService)
-	group := router.NewRouter(handlerHandler)
+	accountRepository := repository.NewAccountRepository(logger, db)
+	accountService := service.NewAccountService(logger, accountRepository)
+	accountHandler := handler.NewAccountHandler(logger, accountService)
+	group := router.NewAccountRouter(accountHandler)
 	engine := http.NewRouter(httpOptions, logger, group)
 	server := http.New(httpOptions, logger, engine)
 	applicationApplication, err := account.New(accountOptions, logger, server)

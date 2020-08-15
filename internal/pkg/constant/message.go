@@ -40,7 +40,3 @@ const (
 
 	MinioMakeBucketOk = "Minio创建bucket成功"
 )
-
-const (
-	UserNotExistError = "用户不存在"
-)

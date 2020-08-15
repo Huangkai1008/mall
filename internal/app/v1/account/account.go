@@ -1,7 +1,11 @@
 package account
 
 import (
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 	"gorm.io/plugin/soft_delete"
+
+	"mall/internal/pkg/constant"
 	metav1 "mall/pkg/meta/v1"
 )
 
@@ -20,4 +24,19 @@ type Account struct {
 
 	// Required: true
 	DeletedAt soft_delete.DeletedAt `json:"-" gorm:"column:delete_time;not null;uniqueIndex:udx_username;uniqueIndex:udx_email;comment:删除时间"`
+}
+
+func (a *Account) BeforeCreate(tx *gorm.DB) (err error) {
+	if r := tx.Where("username = ?", a.Username).Limit(1).First(&Account{}); r.Error != nil {
+		return err
+	} else if r.RowsAffected > 0 {
+		return errors.New(constant.AccountAlreadyExist)
+	}
+
+	if r := tx.Where("email = ?", a.Email).Limit(1).First(&Account{}); r.Error != nil {
+		return err
+	} else if r.RowsAffected > 0 {
+		return errors.New(constant.AccountEmailAlreadyExist)
+	}
+	return nil
 }

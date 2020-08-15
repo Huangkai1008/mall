@@ -8,13 +8,13 @@ import (
 	"mall/internal/pkg/router"
 )
 
-func NewRouter(h *handler.Handler) router.Group {
+func NewAccountRouter(h *handler.AccountHandler) router.Group {
 	return func(r *gin.RouterGroup) {
 		userApi := r.Group("/accounts")
 		{
-			userApi.POST("", h.Create)
+			userApi.POST("", h.Register)
 		}
 	}
 }
 
-var ProviderSet = wire.NewSet(NewRouter)
+var ProviderSet = wire.NewSet(NewAccountRouter)

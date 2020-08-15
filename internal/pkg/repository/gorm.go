@@ -27,12 +27,12 @@ func (r *GormRepository) Get(id int) (record metav1.Resource, err error) {
 	return
 }
 
-func (r *GormRepository) GetOne(conditions interface{}) (record metav1.Resource, err error) {
+func (r *GormRepository) Find(conditions interface{}) (record metav1.Resource, err error) {
 	err = r.db.Where(conditions).First(&record).Error
 	return
 }
 
-func (r *GormRepository) GetAll(conditions interface{}) (records []metav1.Resource, err error) {
+func (r *GormRepository) FindAll(conditions interface{}) (records []metav1.Resource, err error) {
 	err = r.db.Where(conditions).Find(&records).Error
 	return
 }
