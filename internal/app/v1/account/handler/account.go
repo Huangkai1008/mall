@@ -1,9 +1,8 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
 	"mall/internal/app/v1/account"
@@ -25,23 +24,23 @@ func NewAccountHandler(logger *zap.Logger, service *service.AccountService) *Acc
 }
 
 // Register account.
-func (h *AccountHandler) Register(c *gin.Context) {
-	var regSchema schema.AccountRegisterSchema
-	if err := c.ShouldBind(&regSchema); err != nil {
-		errs := err.(validator.ValidationErrors)
-		resp.BadEntityRequest(c, regSchema.Validate(errs))
-		return
+func (h *AccountHandler) Register(c echo.Context) (err error) {
+	s := new(schema.AccountRegSchema)
+	if err = c.Bind(s); err != nil {
+		return err
+	}
+	if err = c.Validate(s); err != nil {
+		return err
 	}
 
 	if a, err := h.service.Create(&account.Account{
-		Username: regSchema.Username,
-		Email:    regSchema.Email,
-		Password: regSchema.Password,
+		Username: s.Username,
+		Email:    s.Email,
+		Password: s.Password,
 	}); err != nil {
-		resp.BadRequest(c, err.Error())
-		return
+		return err
 	} else {
-		resp.Created(c, a)
+		return resp.Created(c, a)
 	}
 }
 
@@ -49,15 +48,11 @@ func (h *AccountHandler) Register(c *gin.Context) {
 //func (h *AccountHandler) Login(c *gin.Context) {
 //	var loginSchema schema.AccountLoginSchema
 //	if err := c.ShouldBind(&loginSchema); err != nil {
-//		errs := err.(validator.ValidationErrors)
+//		errs := err.(validators.ValidationErrors)
 //		resp.BadEntityRequest(c, loginSchema.Validate(errs))
 //		return
 //	}
 //
-//	a := account.Account{
-//		Username: loginSchema.Username,
-//		Password: loginSchema.Password,
-//	}
 //	if a, err := h.service.Login(loginSchema.Username, loginSchema.Password); err != nil {
 //		resp.BadRequest(c, err.Error())
 //		return

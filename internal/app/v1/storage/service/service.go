@@ -76,7 +76,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*schem
 		minio.PutObjectOptions{ContentType: contentType},
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, constant.MinioPutObjectError)
+		return nil, errors.WithMessage(err, constant.MinioPutObjectError)
 	}
 	return &schema.ObjectSchema{
 		Url:          s.getUrl(constant.BucketName, info.Key),

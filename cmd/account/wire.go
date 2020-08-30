@@ -4,6 +4,7 @@ package main
 
 import (
 	"github.com/google/wire"
+
 	"mall/internal/app/v1/account"
 	"mall/internal/app/v1/account/handler"
 	"mall/internal/app/v1/account/repository"
@@ -14,6 +15,7 @@ import (
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/transport/http"
+	"mall/internal/pkg/validators"
 )
 
 var providerSet = wire.NewSet(
@@ -26,6 +28,7 @@ var providerSet = wire.NewSet(
 	handler.ProviderSet,
 	repository.ProviderSet,
 	service.ProviderSet,
+	validators.ProviderSet,
 )
 
 // CreateApp creates an app by wire.

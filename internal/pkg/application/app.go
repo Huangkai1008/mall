@@ -2,12 +2,10 @@ package application
 
 import (
 	"context"
-	"mall/internal/pkg/validator"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -23,7 +21,6 @@ import (
 type Application struct {
 	app.App
 	logger     *zap.Logger
-	router     *gin.Engine
 	httpServer *http.Server
 	grpcServer *grpc.Server
 	minioCli   *minio.Client
@@ -35,17 +32,13 @@ type Application struct {
 type Option func(app *Application) error
 
 // New returns a new Application.
-func New(name, locale string, logger *zap.Logger, options ...Option) (*Application, error) {
+func New(name string, logger *zap.Logger, options ...Option) (*Application, error) {
 
 	a := &Application{
 		App: app.App{
 			Name: name,
 		},
 		logger: logger.With(zap.String("type", "Application")),
-	}
-
-	if err := validator.RegisterTranslation(locale); err != nil {
-		return nil, errors.Wrap(err, constant.TransRegisterError)
 	}
 
 	for _, option := range options {
@@ -84,7 +77,7 @@ func WithMinioCli(c *minio.Client) Option {
 // Start Application.
 func (a *Application) Start() error {
 	if err := a.httpServer.Start(); err != nil {
-		return errors.Wrap(err, constant.HTTPServerStartError)
+		return errors.WithMessage(err, constant.HTTPServerStartError)
 	}
 	a.logger.Info("Application Started", zap.String("name", a.Name))
 	return nil
@@ -93,7 +86,7 @@ func (a *Application) Start() error {
 // Stop Application.
 func (a *Application) Stop() error {
 	if err := a.httpServer.Stop(); err != nil {
-		return errors.Wrap(err, constant.HTTPServerStopError)
+		return errors.WithMessage(err, constant.HTTPServerStopError)
 	}
 	a.logger.Info("Server exiting ...")
 	return nil

@@ -10,3 +10,8 @@ func GeneratePasswordHash(password string) (string, error) {
 	}
 	return string(hashPassword), nil
 }
+
+// ComparePasswordHash compare password hash with raw password.
+func ComparePasswordHash(password, hashPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password))
+}

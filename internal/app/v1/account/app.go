@@ -38,7 +38,6 @@ func New(
 ) (*application.Application, error) {
 	return application.New(
 		o.Name,
-		o.Locale,
 		logger,
 		application.WithHttpServer(httpServer),
 	)

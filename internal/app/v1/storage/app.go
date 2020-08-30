@@ -6,14 +6,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+
 	"mall/internal/pkg/application"
 	"mall/internal/pkg/constant"
 	"mall/internal/pkg/transport/http"
 )
 
 type Options struct {
-	Name   string
-	Locale string
+	Name string
 }
 
 func NewOptions(v *viper.Viper, logger *zap.Logger) (*Options, error) {
@@ -39,7 +39,6 @@ func New(
 ) (*application.Application, error) {
 	return application.New(
 		o.Name,
-		o.Locale,
 		logger,
 		application.WithHttpServer(httpServer),
 		application.WithMinioCli(minioCli),

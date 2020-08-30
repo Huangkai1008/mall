@@ -3,8 +3,8 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
-	"mall/internal/app/v1/storage/handler"
 
+	"mall/internal/app/v1/storage/handler"
 	"mall/internal/pkg/router"
 )
 

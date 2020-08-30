@@ -3,27 +3,27 @@ package http
 
 import (
 	"context"
-	"github.com/google/wire"
 	"net/http"
 	"time"
+
+	"github.com/google/wire"
+	"github.com/labstack/echo/v4"
 
 	"github.com/pkg/errors"
 
 	"go.uber.org/zap"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Server is the HTTP server.
 type Server struct {
 	httpServer *http.Server
-	router     *gin.Engine
+	router     *echo.Echo
 	logger     *zap.Logger
 	o          *Options
 }
 
 // New creates a new HTTP server.
-func New(o *Options, logger *zap.Logger, router *gin.Engine) *Server {
+func New(o *Options, logger *zap.Logger, router *echo.Echo) *Server {
 	return &Server{
 		httpServer: &http.Server{
 			Addr:           o.Addr(),
@@ -60,7 +60,7 @@ func (s *Server) Stop() error {
 	defer cancel()
 
 	if err := s.httpServer.Shutdown(ctx); err != nil {
-		return errors.Wrap(err, "Shutdown HTTP server error")
+		return errors.WithMessage(err, "Shutdown HTTP server error")
 	}
 	return nil
 }

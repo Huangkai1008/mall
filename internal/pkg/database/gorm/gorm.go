@@ -22,7 +22,7 @@ func New(o *Options, tables []interface{}) (*gorm.DB, error) {
 	}
 
 	if err = configure(db, o); err != nil {
-		return nil, errors.Wrap(err, constant.ORMConfigError)
+		return nil, errors.WithMessage(err, constant.ORMConfigError)
 	}
 
 	if o.EnableAutoMigrate {

@@ -17,6 +17,8 @@ import (
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
 	"mall/internal/pkg/transport/http"
+	"mall/internal/pkg/validators"
+	"mall/pkg/auth/jwtauth"
 )
 
 // Injectors from wire.go:
@@ -53,11 +55,23 @@ func CreateApp(cf string) (*application.Application, error) {
 		return nil, err
 	}
 	accountRepository := repository.NewAccountRepository(logger, db)
-	accountService := service.NewAccountService(logger, accountRepository)
+	jwtAuth := jwtauth.New()
+	accountService := service.NewAccountService(logger, accountRepository, jwtAuth)
 	accountHandler := handler.NewAccountHandler(logger, accountService)
 	group := router.NewAccountRouter(accountHandler)
-	engine := http.NewRouter(httpOptions, logger, group)
-	server := http.New(httpOptions, logger, engine)
+	validatorsOptions, err := validators.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	customValidator, err := validators.New(validatorsOptions)
+	if err != nil {
+		return nil, err
+	}
+	echo, err := http.NewRouter(httpOptions, logger, group, customValidator)
+	if err != nil {
+		return nil, err
+	}
+	server := http.New(httpOptions, logger, echo)
 	applicationApplication, err := account.New(accountOptions, logger, server)
 	if err != nil {
 		return nil, err
@@ -71,4 +85,4 @@ var (
 
 // wire.go:
 
-var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet)
+var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet, validators.ProviderSet)

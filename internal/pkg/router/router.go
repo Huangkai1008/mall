@@ -1,7 +1,7 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/labstack/echo/v4"
+)
 
-type Router func(*gin.Engine)
-
-type Group func(*gin.RouterGroup)
+type Group func(*echo.Group)
