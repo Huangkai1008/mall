@@ -1,72 +1,54 @@
 package middlewares
 
 import (
-	"bytes"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
-
-	"mall/internal/pkg/ecode"
+	"go.uber.org/zap/zapcore"
 )
 
-func LoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		start := time.Now()
-		bodyLogWriter := &bodyLogWriter{
-			body:           bytes.NewBufferString(""),
-			ResponseWriter: c.Writer,
-		}
-		c.Writer = bodyLogWriter
-		c.Next()
-		latency := time.Since(start)
-		clientIP := c.ClientIP()
-		method := c.Request.Method
-		statusCode := c.Writer.Status()
-		requestUri := c.Request.RequestURI
-		responseBody := bodyLogWriter.body.String()
+func LoggerMiddleware(logger *zap.Logger) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) (err error) {
+			req := c.Request()
+			res := c.Response()
+			start := time.Now()
+			if err = next(c); err != nil {
+				c.Error(err)
+			}
+			stop := time.Now()
+			statusCode := res.Status
 
-		switch {
-		case statusCode >= 400 && statusCode <= 499:
-			{
-				logger.Warn("[WARN]",
-					zap.Int("statusCode", statusCode),
-					zap.String("latency", latency.String()),
-					zap.String("clientIP", clientIP),
-					zap.String("method", method),
-					zap.String("requestUri", requestUri),
-					zap.String("error", ecode.GetMsg(responseBody)),
-				)
+			fields := []zapcore.Field{
+				zap.String("time", time.Now().Format(time.RFC3339Nano)),
+				zap.String("remote_ip", c.RealIP()),
+				zap.String("host", req.Host),
+				zap.String("method", req.Method),
+				zap.String("request_uri", req.RequestURI),
+				zap.String("user_agent", req.UserAgent()),
+				zap.Int("status", res.Status),
+				zap.String("latency", stop.Sub(start).String()),
 			}
-		case statusCode >= 500:
-			{
-				logger.Error("[ERROR]",
-					zap.Int("statusCode", statusCode),
-					zap.String("latency", latency.String()),
-					zap.String("clientIP", clientIP),
-					zap.String("method", method),
-					zap.String("requestUri", requestUri),
-					zap.String("error", ecode.GetMsg(responseBody)),
-				)
+			id := req.Header.Get(echo.HeaderXRequestID)
+			if id == "" {
+				id = res.Header().Get(echo.HeaderXRequestID)
+				fields = append(fields, zap.String("request_id", id))
 			}
-		default:
-			logger.Info("[INFO]",
-				zap.Int("statusCode", statusCode),
-				zap.String("latency", latency.String()),
-				zap.String("clientIP", clientIP),
-				zap.String("method", method),
-				zap.String("requestUri", requestUri),
-			)
+
+			switch {
+			case statusCode >= 400 && statusCode <= 499:
+				{
+					logger.With(zap.Error(err)).Warn("[WARN]", fields...)
+				}
+			case statusCode >= 500:
+				{
+					logger.With(zap.Error(err)).Error("[ERROR]", fields...)
+				}
+			default:
+				logger.Info("[INFO]", fields...)
+			}
+			return nil
 		}
 	}
-}
-
-type bodyLogWriter struct {
-	gin.ResponseWriter
-	body *bytes.Buffer
-}
-
-func (w bodyLogWriter) Write(b []byte) (int, error) {
-	w.body.Write(b)
-	return w.ResponseWriter.Write(b)
 }
