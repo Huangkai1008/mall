@@ -16,14 +16,14 @@ import (
 	minioCli "mall/internal/pkg/storage/minio"
 )
 
-type Service struct {
+type StorageService struct {
 	o        *minioCli.Options
 	logger   *zap.Logger
 	minioCli *minio.Client
 }
 
-func NewService(o *minioCli.Options, logger *zap.Logger, minioCli *minio.Client) *Service {
-	return &Service{
+func NewService(o *minioCli.Options, logger *zap.Logger, minioCli *minio.Client) *StorageService {
+	return &StorageService{
 		o:        o,
 		logger:   logger.With(zap.String("type", "StorageService")),
 		minioCli: minioCli,
@@ -31,7 +31,7 @@ func NewService(o *minioCli.Options, logger *zap.Logger, minioCli *minio.Client)
 }
 
 // PutObject put object to bucket.
-func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*schema.ObjectSchema, error) {
+func (s *StorageService) PutObject(objectName string, fh *multipart.FileHeader) (*schema.ObjectSchema, error) {
 	ctx := context.Background()
 
 	// Check to see if we already own this bucket, if not exists, make new bucket.
@@ -88,7 +88,7 @@ func (s *Service) PutObject(objectName string, fh *multipart.FileHeader) (*schem
 }
 
 // SetReadOnlyBucketPolicy set read-only permissions on an existing bucket.
-func (s *Service) SetReadOnlyBucketPolicy(ctx context.Context, bucketName string) error {
+func (s *StorageService) SetReadOnlyBucketPolicy(ctx context.Context, bucketName string) error {
 	policy := fmt.Sprintf(`
     {
 		"Version": "2012-10-17",
@@ -116,22 +116,22 @@ func (s *Service) SetReadOnlyBucketPolicy(ctx context.Context, bucketName string
 	}
 }
 
-func (s *Service) delimiter() string {
+func (s *StorageService) delimiter() string {
 	return "/"
 }
 
 // getDirName Get directory name as object name prefix.
-func (s *Service) getDirName() string {
+func (s *StorageService) getDirName() string {
 	return time.Now().Format("2006-01-02")
 }
 
 // getObjectName returns generate object name.
-func (s *Service) getObjectName(objectName string) string {
+func (s *StorageService) getObjectName(objectName string) string {
 	return s.getDirName() + s.delimiter() + objectName
 }
 
 // getUrl returns the uploaded file url.
-func (s Service) getUrl(bucketName, objectName string) string {
+func (s *StorageService) getUrl(bucketName, objectName string) string {
 	return fmt.Sprint(s.minioCli.EndpointURL()) + "/" + bucketName + "/" + objectName
 }
 

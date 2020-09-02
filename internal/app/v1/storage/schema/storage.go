@@ -3,13 +3,10 @@ package schema
 import (
 	"mime/multipart"
 	"time"
-
-	"mall/internal/pkg/schema"
 )
 
 // ObjectCreateSchema is the object create schema.
 type ObjectCreateSchema struct {
-	schema.BaseSchema
 	File *multipart.FileHeader `form:"file" binding:"required,file"`
 }
 

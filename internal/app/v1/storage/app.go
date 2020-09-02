@@ -13,7 +13,8 @@ import (
 )
 
 type Options struct {
-	Name string
+	Name    string
+	Version string
 }
 
 func NewOptions(v *viper.Viper, logger *zap.Logger) (*Options, error) {
@@ -39,6 +40,7 @@ func New(
 ) (*application.Application, error) {
 	return application.New(
 		o.Name,
+		o.Version,
 		logger,
 		application.WithHttpServer(httpServer),
 		application.WithMinioCli(minioCli),

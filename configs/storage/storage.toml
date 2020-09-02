@@ -12,7 +12,7 @@ Stdout = true
 
 # HTTP配置
 [http]
-Host = '127.0.0.1'
+Host = '0.0.0.0'
 Port = 5002
 ReadTimeout = 60
 WriteTimeout = 60

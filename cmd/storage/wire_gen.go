@@ -15,8 +15,10 @@ import (
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
+	"mall/internal/pkg/registry/consul"
 	"mall/internal/pkg/storage/minio"
 	"mall/internal/pkg/transport/http"
+	"mall/internal/pkg/validators"
 )
 
 // Injectors from wire.go:
@@ -51,11 +53,31 @@ func CreateApp(cf string) (*application.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	serviceService := service.NewService(minioOptions, logger, client)
-	handlerHandler := handler.NewHandler(logger, serviceService)
-	group := router.NewRouter(handlerHandler)
-	engine := http.NewRouter(httpOptions, logger, group)
-	server := http.New(httpOptions, logger, engine)
+	storageService := service.NewService(minioOptions, logger, client)
+	storageHandler := handler.NewHandler(logger, storageService)
+	group := router.NewStorageRouter(storageHandler)
+	validatorsOptions, err := validators.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	customValidator, err := validators.New(validatorsOptions)
+	if err != nil {
+		return nil, err
+	}
+	echo, err := http.NewRouter(httpOptions, logger, group, customValidator)
+	if err != nil {
+		return nil, err
+	}
+	consulOptions, err := consul.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	consulClient, err := consul.NewClient(consulOptions, logger)
+	if err != nil {
+		return nil, err
+	}
+	registry := consul.New(consulClient)
+	server := http.New(httpOptions, logger, echo, registry)
 	applicationApplication, err := storage.New(storageOptions, logger, server, client)
 	if err != nil {
 		return nil, err
@@ -65,4 +87,4 @@ func CreateApp(cf string) (*application.Application, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(storage.ProviderSet, config.ProviderSet, logging.ProviderSet, minio.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, service.ProviderSet)
+var providerSet = wire.NewSet(storage.ProviderSet, config.ProviderSet, logging.ProviderSet, minio.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, service.ProviderSet, validators.ProviderSet, consul.ProviderSet)
