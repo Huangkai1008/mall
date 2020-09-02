@@ -40,3 +40,7 @@ const (
 
 	MinioMakeBucketOk = "Minio创建bucket成功"
 )
+
+const (
+	ConsulConfigError = "Consul配置错误"
+)

@@ -14,6 +14,7 @@ import (
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
+	"mall/internal/pkg/registry/consul"
 	"mall/internal/pkg/transport/http"
 	"mall/internal/pkg/validators"
 )
@@ -29,6 +30,7 @@ var providerSet = wire.NewSet(
 	repository.ProviderSet,
 	service.ProviderSet,
 	validators.ProviderSet,
+	consul.ProviderSet,
 )
 
 // CreateApp creates an app by wire.

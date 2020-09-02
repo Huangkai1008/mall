@@ -26,9 +26,6 @@ func NewOptions(v *viper.Viper) (*Options, error) {
 		o   = new(Options)
 	)
 
-	v.SetDefault("JwtAccessTokenExpires", 2*time.Hour)
-	v.SetDefault("JwtRefreshTokenExpires", 30*24*time.Hour)
-
 	if err = v.UnmarshalKey("jwt", o); err != nil {
 		return nil, errors.Wrap(err, constant.LoadConfigError)
 	}

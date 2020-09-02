@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/google/wire v0.5.0
+	github.com/hashicorp/consul/api v1.11.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/pkg/errors v0.9.1

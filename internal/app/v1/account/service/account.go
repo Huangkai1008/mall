@@ -8,7 +8,6 @@ import (
 	"mall/internal/app/v1/account/repository"
 	"mall/internal/pkg/util/encrypt"
 	"mall/pkg/auth"
-	"mall/pkg/auth/jwtauth"
 )
 
 type AccountService struct {
@@ -70,4 +69,4 @@ func (s *AccountService) RefreshToken() {
 
 }
 
-var ProviderSet = wire.NewSet(NewAccountService, wire.Bind(new(auth.Auth), new(*jwtauth.JwtAuth)), jwtauth.New)
+var ProviderSet = wire.NewSet(NewAccountService)

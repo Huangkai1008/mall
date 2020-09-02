@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/wire"
 
 	"mall/pkg/auth"
 )
@@ -75,3 +76,5 @@ func (j *JwtAuth) ParseJwtToken(tokenString string) (*Claims, error) {
 		return nil, err
 	}
 }
+
+var ProviderSet = wire.NewSet(wire.Bind(new(auth.Auth), new(*JwtAuth)), New)

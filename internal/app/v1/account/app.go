@@ -9,11 +9,13 @@ import (
 	"mall/internal/pkg/application"
 	"mall/internal/pkg/constant"
 	"mall/internal/pkg/transport/http"
+	"mall/pkg/auth/jwtauth"
 )
 
 type Options struct {
-	Name   string
-	Locale string
+	Name    string
+	Version string
+	Locale  string
 }
 
 func NewOptions(v *viper.Viper, logger *zap.Logger) (*Options, error) {
@@ -38,10 +40,11 @@ func New(
 ) (*application.Application, error) {
 	return application.New(
 		o.Name,
+		o.Version,
 		logger,
 		application.WithHttpServer(httpServer),
 	)
 }
 
 var Tables = []interface{}{&Account{}}
-var ProviderSet = wire.NewSet(New, NewOptions, wire.NewSet(wire.Value(Tables)))
+var ProviderSet = wire.NewSet(New, NewOptions, wire.NewSet(wire.Value(Tables)), jwtauth.ProviderSet)

@@ -20,6 +20,7 @@ import (
 // It contains all the services and configurations.
 type Application struct {
 	app.App
+	Version    string
 	logger     *zap.Logger
 	httpServer *http.Server
 	grpcServer *grpc.Server
@@ -32,13 +33,14 @@ type Application struct {
 type Option func(app *Application) error
 
 // New returns a new Application.
-func New(name string, logger *zap.Logger, options ...Option) (*Application, error) {
+func New(name, version string, logger *zap.Logger, options ...Option) (*Application, error) {
 
 	a := &Application{
 		App: app.App{
 			Name: name,
 		},
-		logger: logger.With(zap.String("type", "Application")),
+		Version: version,
+		logger:  logger.With(zap.String("type", "Application")),
 	}
 
 	for _, option := range options {
@@ -53,6 +55,8 @@ func New(name string, logger *zap.Logger, options ...Option) (*Application, erro
 // WithHttpServer sets the http server.
 func WithHttpServer(s *http.Server) Option {
 	return func(a *Application) error {
+		s.Name = a.Name
+		s.Version = a.Version
 		a.httpServer = s
 		return nil
 	}

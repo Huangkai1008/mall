@@ -16,6 +16,7 @@ import (
 	"mall/internal/pkg/config"
 	"mall/internal/pkg/database/gorm"
 	"mall/internal/pkg/logging"
+	"mall/internal/pkg/registry/consul"
 	"mall/internal/pkg/transport/http"
 	"mall/internal/pkg/validators"
 	"mall/pkg/auth/jwtauth"
@@ -71,7 +72,16 @@ func CreateApp(cf string) (*application.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	server := http.New(httpOptions, logger, echo)
+	consulOptions, err := consul.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	client, err := consul.NewClient(consulOptions, logger)
+	if err != nil {
+		return nil, err
+	}
+	registry := consul.New(client)
+	server := http.New(httpOptions, logger, echo, registry)
 	applicationApplication, err := account.New(accountOptions, logger, server)
 	if err != nil {
 		return nil, err
@@ -85,4 +95,4 @@ var (
 
 // wire.go:
 
-var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet, validators.ProviderSet)
+var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet, validators.ProviderSet, consul.ProviderSet)

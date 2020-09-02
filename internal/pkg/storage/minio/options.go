@@ -3,6 +3,7 @@ package minio
 import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+
 	"mall/internal/pkg/constant"
 )
 
@@ -24,7 +25,7 @@ type Options struct {
 	Region string
 }
 
-// NewOptions creates a new set of o for the HTTP server.
+// NewOptions creates a new set of o for the minio client.
 func NewOptions(v *viper.Viper) (*Options, error) {
 	var (
 		err error

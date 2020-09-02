@@ -3,6 +3,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,18 +13,25 @@ import (
 	"github.com/pkg/errors"
 
 	"go.uber.org/zap"
+
+	"mall/internal/pkg/registry"
+	netutil "mall/internal/pkg/util/net"
 )
 
 // Server is the HTTP server.
 type Server struct {
+	Name       string
+	Version    string
 	httpServer *http.Server
 	router     *echo.Echo
 	logger     *zap.Logger
-	o          *Options
+	registrar  registry.Registrar
+
+	*Options
 }
 
 // New creates a new HTTP server.
-func New(o *Options, logger *zap.Logger, router *echo.Echo) *Server {
+func New(o *Options, logger *zap.Logger, router *echo.Echo, registrar registry.Registrar) *Server {
 	return &Server{
 		httpServer: &http.Server{
 			Addr:           o.Addr(),
@@ -31,22 +39,27 @@ func New(o *Options, logger *zap.Logger, router *echo.Echo) *Server {
 			WriteTimeout:   o.WriteTimeout * time.Second,
 			MaxHeaderBytes: 1 << 20,
 		},
-		router: router,
-		logger: logger.With(zap.String("type", "http.Server")),
-		o:      o,
+		router:    router,
+		logger:    logger.With(zap.String("type", "http.Server")),
+		registrar: registrar,
+		Options:   o,
 	}
 }
 
 // Start http server.
 func (s *Server) Start() error {
 	s.httpServer.Handler = s.router
-	s.logger.Info("HTTP server starting ...", zap.String("addr", s.o.Addr()))
+	s.logger.Info("HTTP server starting ...", zap.String("addr", s.Addr()))
 
 	go func() {
 		if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			s.logger.Fatal("Start HTTP server error", zap.Error(err))
 		}
 	}()
+
+	if err := s.register(s.registrar); err != nil {
+		return errors.WithMessage(err, "Register HTTP service error")
+	}
 	return nil
 }
 
@@ -59,10 +72,45 @@ func (s *Server) Stop() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	if err := s.deregister(s.registrar); err != nil {
+		return errors.WithMessage(err, "Deregister HTTP service error")
+	}
+
 	if err := s.httpServer.Shutdown(ctx); err != nil {
 		return errors.WithMessage(err, "Shutdown HTTP server error")
 	}
 	return nil
+}
+
+// GetID returns the unique identifier of the server.
+// It is useful when a service starts more than one server.
+func (s *Server) GetID() string {
+	return fmt.Sprintf("%s[%s]", s.Name, s.IntranetAddr())
+}
+
+func (s *Server) Service() *registry.ServiceInstance {
+	id := s.GetID()
+	return &registry.ServiceInstance{
+		ID:       id,
+		Name:     s.Name,
+		Version:  s.Version,
+		Metadata: map[string]string{"service": s.Name, "version": s.Version},
+		Endpoints: []string{
+			fmt.Sprintf("http://%s?isSecure=false", s.IntranetAddr()),
+		},
+	}
+}
+
+func (s *Server) IntranetAddr() string {
+	return fmt.Sprintf("%s:%d", netutil.GetIntranetIP(), s.Port)
+}
+
+func (s *Server) register(registry registry.Registrar) error {
+	return registry.Register(context.Background(), s.Service())
+}
+
+func (s *Server) deregister(registry registry.Registrar) error {
+	return registry.Deregister(context.Background(), s.Service())
 }
 
 var ProviderSet = wire.NewSet(New, NewOptions, NewRouter)

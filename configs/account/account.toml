@@ -12,7 +12,7 @@ Stdout = true
 
 # HTTP配置
 [http]
-Host = '127.0.0.1'
+Host = '0.0.0.0'
 Port = 5001
 ReadTimeout = 60
 WriteTimeout = 60
@@ -22,4 +22,3 @@ WriteTimeout = 60
 MaxIdleConnections = 10
 MaxOpenConnections = 100
 EnableAutoMigrate = true
-
