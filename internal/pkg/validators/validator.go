@@ -33,10 +33,12 @@ func (v *CustomValidator) Validate(i interface{}) error {
 	if err := v.validate.Struct(i); err != nil {
 		var builder strings.Builder
 		errs := err.(validator.ValidationErrors)
-		for _, err := range errs {
+		for idx, err := range errs {
 			msg := err.Translate(v.trans)
 			builder.WriteString(msg)
-			builder.WriteString(", ")
+			if idx != len(errs)-1 {
+				builder.WriteString(", ")
+			}
 		}
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, builder.String())
 	}

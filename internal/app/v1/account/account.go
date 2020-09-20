@@ -5,7 +5,7 @@ import (
 	"gorm.io/plugin/soft_delete"
 
 	"mall/internal/pkg/constant"
-	err "mall/internal/pkg/error"
+	errs "mall/internal/pkg/error"
 	metav1 "mall/pkg/meta/v1"
 )
 
@@ -27,16 +27,16 @@ type Account struct {
 }
 
 func (a *Account) BeforeCreate(tx *gorm.DB) error {
-	if r := tx.Where("username = ?", a.Username).Limit(1).First(&Account{}); r.Error != nil {
+	if r := tx.Where("username = ?", a.Username).Limit(1).Find(&Account{}); r.Error != nil {
 		return r.Error
 	} else if r.RowsAffected > 0 {
-		return err.NewBadRequestError(constant.AccountAlreadyExist)
+		return errs.NewBadRequestError(constant.AccountAlreadyExist)
 	}
 
-	if r := tx.Where("email = ?", a.Email).Limit(1).First(&Account{}); r.Error != nil {
+	if r := tx.Where("email = ?", a.Email).Limit(1).Find(&Account{}); r.Error != nil {
 		return r.Error
 	} else if r.RowsAffected > 0 {
-		return err.NewBadRequestError(constant.AccountEmailAlreadyExist)
+		return errs.NewBadRequestError(constant.AccountEmailAlreadyExist)
 	}
 	return nil
 }
