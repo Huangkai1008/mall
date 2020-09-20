@@ -1,13 +1,13 @@
 package validators
 
 import (
-	"net/http"
 	"strings"
 
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
-	"github.com/labstack/echo/v4"
+
+	e "mall/internal/pkg/error"
 )
 
 type CustomValidator struct {
@@ -40,7 +40,7 @@ func (v *CustomValidator) Validate(i interface{}) error {
 				builder.WriteString(", ")
 			}
 		}
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, builder.String())
+		return e.NewValidationError(builder.String())
 	}
 	return nil
 }

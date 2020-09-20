@@ -23,12 +23,12 @@ func NewGormRepository(db *gorm.DB, logger *zap.Logger) *GormRepository {
 }
 
 func (r *GormRepository) Get(id int) (record metav1.Resource, err error) {
-	err = r.Db.First(&record, id).Error
+	err = r.Db.Limit(1).Find(&record, id).Error
 	return
 }
 
 func (r *GormRepository) Find(conditions interface{}) (record metav1.Resource, err error) {
-	err = r.Db.Where(conditions).First(&record).Error
+	err = r.Db.Where(conditions).Limit(1).Find(&record).Error
 	return
 }
 

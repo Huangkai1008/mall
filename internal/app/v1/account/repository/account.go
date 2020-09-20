@@ -23,7 +23,7 @@ type accountRepository struct {
 }
 
 func (r *accountRepository) Find(conditions interface{}) (account *account.Account, err error) {
-	err = r.Db.Where(conditions).First(&account).Error
+	err = r.Db.Where(conditions).Limit(1).Find(&account).Error
 	return
 }
 

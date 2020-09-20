@@ -44,21 +44,21 @@ func (h *AccountHandler) Register(c echo.Context) (err error) {
 	}
 }
 
-//// Login account.
-//func (h *AccountHandler) Login(c *gin.Context) {
-//	var loginSchema schema.AccountLoginSchema
-//	if err := c.ShouldBind(&loginSchema); err != nil {
-//		errs := err.(validators.ValidationErrors)
-//		resp.BadEntityRequest(c, loginSchema.Validate(errs))
-//		return
-//	}
-//
-//	if a, err := h.service.Login(loginSchema.Username, loginSchema.Password); err != nil {
-//		resp.BadRequest(c, err.Error())
-//		return
-//	} else {
-//		resp.Created(c, a)
-//	}
-//}
+// Login account.
+func (h *AccountHandler) Login(c echo.Context) (err error) {
+	s := new(schema.AccountLoginSchema)
+	if err = c.Bind(s); err != nil {
+		return err
+	}
+	if err = c.Validate(s); err != nil {
+		return err
+	}
+
+	if a, err := h.service.Login(s.Username, s.Password); err != nil {
+		return err
+	} else {
+		return resp.Created(c, a)
+	}
+}
 
 var ProviderSet = wire.NewSet(NewAccountHandler)

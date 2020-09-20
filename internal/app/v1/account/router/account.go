@@ -12,8 +12,8 @@ func NewAccountRouter(h *handler.AccountHandler) router.Group {
 	return func(e *echo.Group) {
 		userApi := e.Group("/accounts")
 		{
-			userApi.POST("", h.Register)
-			//userApi.POST("/authentication", h.Login)
+			userApi.POST("/", h.Register)
+			userApi.POST("/authentication", h.Login)
 		}
 	}
 }
