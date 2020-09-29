@@ -6,83 +6,59 @@
 package main
 
 import (
+	"github.com/Huangkai1008/mall/internal/app/v1/account"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/handler"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/repository"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/router"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/service"
+	"github.com/Huangkai1008/mall/internal/pkg/config"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/auth"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/database"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/http"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/logging"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/registry"
+	"github.com/Huangkai1008/micro-kit/pkg/application"
+	http2 "github.com/Huangkai1008/micro-kit/pkg/transport/http"
 	"github.com/google/wire"
-	"mall/internal/app/v1/account"
-	"mall/internal/app/v1/account/handler"
-	"mall/internal/app/v1/account/repository"
-	"mall/internal/app/v1/account/router"
-	"mall/internal/app/v1/account/service"
-	"mall/internal/pkg/application"
-	"mall/internal/pkg/config"
-	"mall/internal/pkg/database/gorm"
-	"mall/internal/pkg/logging"
-	"mall/internal/pkg/registry/consul"
-	"mall/internal/pkg/transport/http"
-	"mall/internal/pkg/validators"
-	"mall/pkg/auth/jwtauth"
 )
 
 // Injectors from wire.go:
 
 // CreateApp creates an app by wire.
 func CreateApp(cf string) (*application.Application, error) {
-	viper, err := config.New(cf)
+	configConfig, err := config.New(cf)
 	if err != nil {
 		return nil, err
 	}
-	options, err := logging.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	logger, err := logging.New(options)
-	if err != nil {
-		return nil, err
-	}
-	accountOptions, err := account.NewOptions(viper, logger)
-	if err != nil {
-		return nil, err
-	}
-	httpOptions, err := http.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	gormOptions, err := gorm.NewOptions(viper)
+	logger, err := logging.NewLogger(configConfig)
 	if err != nil {
 		return nil, err
 	}
 	v := _wireValue
-	db, err := gorm.New(gormOptions, v)
+	db, err := database.NewGorm(configConfig, v)
 	if err != nil {
 		return nil, err
 	}
 	accountRepository := repository.NewAccountRepository(logger, db)
-	jwtAuth := jwtauth.New()
+	jwtAuth := auth.NewJwtAuth(configConfig)
 	accountService := service.NewAccountService(logger, accountRepository, jwtAuth)
 	accountHandler := handler.NewAccountHandler(logger, accountService)
 	group := router.NewAccountRouter(accountHandler)
-	validatorsOptions, err := validators.NewOptions(viper)
+	customValidator, err := http.NewValidator(configConfig)
 	if err != nil {
 		return nil, err
 	}
-	customValidator, err := validators.New(validatorsOptions)
+	echo, err := http2.NewRouter(logger, group, customValidator)
 	if err != nil {
 		return nil, err
 	}
-	echo, err := http.NewRouter(httpOptions, logger, group, customValidator)
+	client, err := registry.NewConsulClient(configConfig, logger)
 	if err != nil {
 		return nil, err
 	}
-	consulOptions, err := consul.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	client, err := consul.NewClient(consulOptions, logger)
-	if err != nil {
-		return nil, err
-	}
-	registry := consul.New(client)
-	server := http.New(httpOptions, logger, echo, registry)
-	applicationApplication, err := account.New(accountOptions, logger, server)
+	consulRegistry := registry.NewConsulRegistrar(client)
+	server := http.NewHTTPServer(configConfig, logger, echo, consulRegistry)
+	applicationApplication, err := account.New(configConfig, logger, server)
 	if err != nil {
 		return nil, err
 	}
@@ -95,4 +71,4 @@ var (
 
 // wire.go:
 
-var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, logging.ProviderSet, http.ProviderSet, gorm.ProviderSet, router.ProviderSet, handler.ProviderSet, repository.ProviderSet, service.ProviderSet, validators.ProviderSet, consul.ProviderSet)
+var providerSet = wire.NewSet(account.ProviderSet, config.ProviderSet, registry.ProviderSet, logging.ProviderSet, auth.ProviderSet, router.ProviderSet, http.ProviderSet, database.ProviderSet, repository.ProviderSet, service.ProviderSet, handler.ProviderSet)

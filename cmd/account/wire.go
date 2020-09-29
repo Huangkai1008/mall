@@ -5,32 +5,33 @@ package main
 import (
 	"github.com/google/wire"
 
-	"mall/internal/app/v1/account"
-	"mall/internal/app/v1/account/handler"
-	"mall/internal/app/v1/account/repository"
-	"mall/internal/app/v1/account/router"
-	"mall/internal/app/v1/account/service"
-	"mall/internal/pkg/application"
-	"mall/internal/pkg/config"
-	"mall/internal/pkg/database/gorm"
-	"mall/internal/pkg/logging"
-	"mall/internal/pkg/registry/consul"
-	"mall/internal/pkg/transport/http"
-	"mall/internal/pkg/validators"
+	"github.com/Huangkai1008/mall/internal/app/v1/account"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/handler"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/repository"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/router"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/service"
+	"github.com/Huangkai1008/mall/internal/pkg/config"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/auth"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/database"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/http"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/logging"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/registry"
+
+	"github.com/Huangkai1008/micro-kit/pkg/application"
 )
 
 var providerSet = wire.NewSet(
 	account.ProviderSet,
 	config.ProviderSet,
+	registry.ProviderSet,
 	logging.ProviderSet,
-	http.ProviderSet,
-	gorm.ProviderSet,
+	auth.ProviderSet,
 	router.ProviderSet,
-	handler.ProviderSet,
+	http.ProviderSet,
+	database.ProviderSet,
 	repository.ProviderSet,
 	service.ProviderSet,
-	validators.ProviderSet,
-	consul.ProviderSet,
+	handler.ProviderSet,
 )
 
 // CreateApp creates an app by wire.

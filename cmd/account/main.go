@@ -1,6 +1,8 @@
 package main
 
-import "flag"
+import (
+	"flag"
+)
 
 var configFile = flag.String("f", "account", "set config file which viper will loading.")
 

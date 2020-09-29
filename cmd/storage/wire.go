@@ -5,32 +5,33 @@ package main
 import (
 	"github.com/google/wire"
 
-	"mall/internal/app/v1/storage"
-	"mall/internal/app/v1/storage/handler"
-	"mall/internal/app/v1/storage/router"
-	"mall/internal/app/v1/storage/service"
-	"mall/internal/pkg/application"
-	"mall/internal/pkg/config"
-	"mall/internal/pkg/database/gorm"
-	"mall/internal/pkg/logging"
-	"mall/internal/pkg/registry/consul"
-	minioCli "mall/internal/pkg/storage/minio"
-	"mall/internal/pkg/transport/http"
-	"mall/internal/pkg/validators"
+	"github.com/Huangkai1008/micro-kit/pkg/application"
+
+	"github.com/Huangkai1008/mall/internal/app/v1/account/repository"
+	storagev1 "github.com/Huangkai1008/mall/internal/app/v1/storage"
+	"github.com/Huangkai1008/mall/internal/app/v1/storage/handler"
+	"github.com/Huangkai1008/mall/internal/app/v1/storage/router"
+	"github.com/Huangkai1008/mall/internal/app/v1/storage/service"
+	"github.com/Huangkai1008/mall/internal/pkg/config"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/database"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/http"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/logging"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/registry"
+	"github.com/Huangkai1008/mall/internal/pkg/provider/storage"
 )
 
 var providerSet = wire.NewSet(
-	storage.ProviderSet,
+	storagev1.ProviderSet,
 	config.ProviderSet,
+	registry.ProviderSet,
+	storage.ProviderSet,
 	logging.ProviderSet,
-	minioCli.ProviderSet,
-	http.ProviderSet,
-	gorm.ProviderSet,
 	router.ProviderSet,
-	handler.ProviderSet,
+	http.ProviderSet,
+	database.ProviderSet,
+	repository.ProviderSet,
 	service.ProviderSet,
-	validators.ProviderSet,
-	consul.ProviderSet,
+	handler.ProviderSet,
 )
 
 // CreateApp creates an app by wire.
