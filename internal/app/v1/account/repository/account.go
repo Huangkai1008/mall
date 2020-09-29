@@ -5,9 +5,10 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	"mall/internal/app/v1/account"
-	repo "mall/internal/pkg/repository"
-	metav1 "mall/pkg/meta/v1"
+	metav1 "github.com/Huangkai1008/micro-kit/pkg/meta/v1"
+	repo "github.com/Huangkai1008/micro-kit/pkg/repository"
+
+	"github.com/Huangkai1008/mall/internal/app/v1/account"
 )
 
 type AccountRepository interface {

@@ -8,14 +8,51 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"mall/internal/pkg/constant"
+	"github.com/Huangkai1008/micro-kit/pkg/auth/jwtauth"
+	"github.com/Huangkai1008/micro-kit/pkg/database/gorm"
+	"github.com/Huangkai1008/micro-kit/pkg/logging"
+	"github.com/Huangkai1008/micro-kit/pkg/registry/consul"
+	"github.com/Huangkai1008/micro-kit/pkg/storage/minio"
+	"github.com/Huangkai1008/micro-kit/pkg/transport/http"
+
+	"github.com/Huangkai1008/mall/internal/pkg/constant"
 )
 
+// Config is the config of application.
+type Config struct {
+	App      App
+	Log      Log
+	Database Database
+	HTTP     HTTP
+	Minio    minio.Options
+	Jwt      jwtauth.Options
+	Consul   consul.Options
+}
+
+type App struct {
+	Name    string
+	Version string
+	Locale  string
+}
+
+type Log struct {
+	logging.Options
+}
+
+type Database struct {
+	gorm.Options
+}
+
+type HTTP struct {
+	http.Options
+}
+
 // New returns a new viper config.
-func New(path string) (*viper.Viper, error) {
+func New(path string) (*Config, error) {
 	var (
-		err error
-		v   = viper.New()
+		err    error
+		v      = viper.New()
+		config *Config
 	)
 
 	// Set viper defaults.
@@ -42,7 +79,10 @@ func New(path string) (*viper.Viper, error) {
 		v.Set(key, val)
 	}
 	v.WatchConfig()
-	return v, err
+	if err = v.Unmarshal(&config); err != nil {
+		return nil, err
+	}
+	return config, err
 }
 
 func setDefaultValues(v *viper.Viper) {

@@ -11,9 +11,10 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"mall/internal/app/v1/storage/schema"
-	"mall/internal/pkg/constant"
-	minioCli "mall/internal/pkg/storage/minio"
+	minioCli "github.com/Huangkai1008/micro-kit/pkg/storage/minio"
+
+	"github.com/Huangkai1008/mall/internal/app/v1/storage/schema"
+	"github.com/Huangkai1008/mall/internal/pkg/constant"
 )
 
 type StorageService struct {

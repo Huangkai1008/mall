@@ -4,11 +4,12 @@ import (
 	"github.com/google/wire"
 	"github.com/labstack/echo/v4"
 
-	"mall/internal/app/v1/account/handler"
-	"mall/internal/pkg/router"
+	"github.com/Huangkai1008/micro-kit/pkg/transport/http"
+
+	"github.com/Huangkai1008/mall/internal/app/v1/account/handler"
 )
 
-func NewAccountRouter(h *handler.AccountHandler) router.Group {
+func NewAccountRouter(h *handler.AccountHandler) http.Group {
 	return func(e *echo.Group) {
 		userApi := e.Group("/accounts")
 		{

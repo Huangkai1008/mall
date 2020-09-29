@@ -4,13 +4,14 @@ import (
 	"github.com/google/wire"
 	"go.uber.org/zap"
 
-	"mall/internal/app/v1/account"
-	"mall/internal/app/v1/account/repository"
-	"mall/internal/app/v1/account/schema"
-	"mall/internal/pkg/constant"
-	e "mall/internal/pkg/error"
-	"mall/internal/pkg/util/encrypt"
-	"mall/pkg/auth"
+	"github.com/Huangkai1008/micro-kit/pkg/auth"
+	e "github.com/Huangkai1008/micro-kit/pkg/error"
+
+	"github.com/Huangkai1008/mall/internal/app/v1/account"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/repository"
+	"github.com/Huangkai1008/mall/internal/app/v1/account/schema"
+	"github.com/Huangkai1008/mall/internal/pkg/constant"
+	"github.com/Huangkai1008/mall/internal/pkg/util/encrypt"
 )
 
 type AccountService struct {
