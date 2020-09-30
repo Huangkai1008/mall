@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -36,15 +35,15 @@ type App struct {
 }
 
 type Log struct {
-	logging.Options
+	logging.Options `mapstructure:",squash"`
 }
 
 type Database struct {
-	gorm.Options
+	gorm.Options `mapstructure:",squash"`
 }
 
 type HTTP struct {
-	http.Options
+	http.Options `mapstructure:",squash"`
 }
 
 // New returns a new viper config.
@@ -54,9 +53,6 @@ func New(path string) (*Config, error) {
 		v      = viper.New()
 		config *Config
 	)
-
-	// Set viper defaults.
-	setDefaultValues(v)
 
 	// Get basic configs from toml file.
 	v.SetConfigName(path)
@@ -83,16 +79,6 @@ func New(path string) (*Config, error) {
 		return nil, err
 	}
 	return config, err
-}
-
-func setDefaultValues(v *viper.Viper) {
-	v.SetDefault("jwt.access_token_expires", 2*time.Hour)
-	v.SetDefault("jwt.refresh_token_expires", 30*24*time.Hour)
-
-	v.SetDefault("consul.enable_health_check", true)
-	v.SetDefault("consul.health_check_interval", 10)
-	v.SetDefault("consul.deregister_critical_service_after", 60)
-	v.SetDefault("consul.heart_beat", true)
 }
 
 var ProviderSet = wire.NewSet(New)

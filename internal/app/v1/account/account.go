@@ -15,16 +15,16 @@ type Account struct {
 	metav1.ObjectMeta
 
 	// Required: true
-	Username string `json:"username" database:"type:varchar(127);not null;uniqueIndex:udx_username;comment:用户名"`
+	Username string `json:"username" gorm:"type:varchar(127);not null;uniqueIndex:udx_username;comment:用户名"`
 
 	// Required: true
-	Email string `json:"email" database:"type:varchar(127);not null;uniqueIndex:udx_email;comment:邮箱"`
+	Email string `json:"email" gorm:"type:varchar(127);not null;uniqueIndex:udx_email;comment:邮箱"`
 
 	// Required: true
-	Password string `json:"-" database:"type:varchar(255);not null;comment:密码"`
+	Password string `json:"-" gorm:"type:varchar(255);not null;comment:密码"`
 
 	// Required: true
-	DeletedAt soft_delete.DeletedAt `json:"-" database:"column:delete_time;not null;uniqueIndex:udx_username;uniqueIndex:udx_email;comment:删除时间"`
+	DeletedAt soft_delete.DeletedAt `json:"-" gorm:"column:delete_time;not null;uniqueIndex:udx_username;uniqueIndex:udx_email;comment:删除时间"`
 }
 
 func (a *Account) BeforeCreate(tx *gorm.DB) error {
