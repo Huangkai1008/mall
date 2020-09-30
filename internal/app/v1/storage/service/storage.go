@@ -11,23 +11,22 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	minioCli "github.com/Huangkai1008/micro-kit/pkg/storage/minio"
-
 	"github.com/Huangkai1008/mall/internal/app/v1/storage/schema"
+	"github.com/Huangkai1008/mall/internal/pkg/config"
 	"github.com/Huangkai1008/mall/internal/pkg/constant"
 )
 
 type StorageService struct {
-	o        *minioCli.Options
+	Region   string
 	logger   *zap.Logger
 	minioCli *minio.Client
 }
 
-func NewService(o *minioCli.Options, logger *zap.Logger, minioCli *minio.Client) *StorageService {
+func NewService(c *config.Config, logger *zap.Logger, minioCli *minio.Client) *StorageService {
 	return &StorageService{
-		o:        o,
 		logger:   logger.With(zap.String("type", "StorageService")),
 		minioCli: minioCli,
+		Region:   c.Minio.Region,
 	}
 }
 
@@ -41,7 +40,7 @@ func (s *StorageService) PutObject(objectName string, fh *multipart.FileHeader) 
 		return nil, errors.Wrap(err, constant.MinioCheckBucketExistError)
 	}
 	if !exists {
-		err = s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.o.Region})
+		err = s.minioCli.MakeBucket(ctx, constant.BucketName, minio.MakeBucketOptions{Region: s.Region})
 		if err != nil {
 			return nil, errors.Wrap(err, constant.MinioMakeBucketError)
 		}

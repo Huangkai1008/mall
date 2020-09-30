@@ -13,7 +13,6 @@ import (
 	"github.com/Huangkai1008/mall/internal/app/v1/storage/router"
 	"github.com/Huangkai1008/mall/internal/app/v1/storage/service"
 	"github.com/Huangkai1008/mall/internal/pkg/config"
-	"github.com/Huangkai1008/mall/internal/pkg/provider/database"
 	"github.com/Huangkai1008/mall/internal/pkg/provider/http"
 	"github.com/Huangkai1008/mall/internal/pkg/provider/logging"
 	"github.com/Huangkai1008/mall/internal/pkg/provider/registry"
@@ -28,7 +27,6 @@ var providerSet = wire.NewSet(
 	logging.ProviderSet,
 	router.ProviderSet,
 	http.ProviderSet,
-	database.ProviderSet,
 	repository.ProviderSet,
 	service.ProviderSet,
 	handler.ProviderSet,

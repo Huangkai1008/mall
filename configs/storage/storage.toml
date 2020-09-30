@@ -17,9 +17,5 @@ Port = 5002
 ReadTimeout = 60
 WriteTimeout = 60
 
-# Database配置
-[database]
-MaxIdleConnections = 10
-MaxOpenConnections = 100
-EnableAutoMigrate = true
+
 

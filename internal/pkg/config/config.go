@@ -23,7 +23,7 @@ type Config struct {
 	Log      Log
 	Database Database
 	HTTP     HTTP
-	Minio    minio.Options
+	Minio    Minio
 	Jwt      jwtauth.Options
 	Consul   consul.Options
 }
@@ -44,6 +44,10 @@ type Database struct {
 
 type HTTP struct {
 	http.Options `mapstructure:",squash"`
+}
+
+type Minio struct {
+	minio.Options `mapstructure:",squash"`
 }
 
 // New returns a new viper config.
