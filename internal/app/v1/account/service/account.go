@@ -14,17 +14,18 @@ import (
 	"github.com/Huangkai1008/mall/internal/pkg/util/encrypt"
 )
 
+
 type AccountService struct {
+	Auth   auth.Auth
 	logger *zap.Logger
 	repo   repository.AccountRepository
-	auth   auth.Auth
 }
 
 func NewAccountService(logger *zap.Logger, repo repository.AccountRepository, auth auth.Auth) *AccountService {
 	return &AccountService{
 		logger: logger.With(zap.String("type", "UserService")),
 		repo:   repo,
-		auth:   auth,
+		Auth:   auth,
 	}
 }
 
@@ -51,11 +52,11 @@ func (s *AccountService) Login(username, password string) (*schema.AccountTokenS
 		return nil, e.NewValidationError(constant.AccountNotCorrectPassword)
 	}
 
-	accessToken, err := s.auth.CreateAccessToken(a.ID, true)
+	accessToken, err := s.Auth.CreateAccessToken(a.ID, true)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := s.auth.CreateRefreshToken(a.ID)
+	refreshToken, err := s.Auth.CreateRefreshToken(a.ID)
 	if err != nil {
 		return nil, err
 	}

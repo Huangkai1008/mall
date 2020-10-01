@@ -13,14 +13,14 @@ import (
 )
 
 type AccountHandler struct {
-	logger  *zap.Logger
-	service *service.AccountService
+	*service.AccountService
+	logger *zap.Logger
 }
 
 func NewAccountHandler(logger *zap.Logger, service *service.AccountService) *AccountHandler {
 	return &AccountHandler{
-		logger:  logger,
-		service: service,
+		AccountService: service,
+		logger:         logger,
 	}
 }
 
@@ -34,7 +34,7 @@ func (h *AccountHandler) Register(c echo.Context) (err error) {
 		return err
 	}
 
-	if a, err := h.service.Create(&account.Account{
+	if a, err := h.Create(&account.Account{
 		Username: s.Username,
 		Email:    s.Email,
 		Password: s.Password,
@@ -55,7 +55,7 @@ func (h *AccountHandler) Login(c echo.Context) (err error) {
 		return err
 	}
 
-	if a, err := h.service.Login(s.Username, s.Password); err != nil {
+	if a, err := h.AccountService.Login(s.Username, s.Password); err != nil {
 		return err
 	} else {
 		return kitutil.Created(c, a)
