@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Huangkai1008/micro-kit v0.8.1
+	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/google/wire v0.5.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/minio/minio-go/v7 v7.0.26
