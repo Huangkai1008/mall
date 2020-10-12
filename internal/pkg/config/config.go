@@ -57,11 +57,13 @@ func New(path string) (*Config, error) {
 		v      = viper.New()
 		config *Config
 	)
+	// Add config paths
+	v.AddConfigPath(fmt.Sprintf("configs/%s", path))
+	v.AddConfigPath("/etc/configs")
 
 	// Get basic configs from toml file.
 	v.SetConfigName(path)
 	v.SetConfigType("toml")
-	v.AddConfigPath(fmt.Sprintf("configs/%s", path))
 	if err = v.ReadInConfig(); err == nil {
 		fmt.Printf("Use config file -> %s\n", v.ConfigFileUsed())
 	} else {
@@ -69,7 +71,8 @@ func New(path string) (*Config, error) {
 	}
 
 	// Get secure configs from dotenv file
-	v.SetConfigFile(fmt.Sprintf("configs/%s/.env", path))
+	v.SetConfigName(".env")
+	v.SetConfigType("env")
 	v.AutomaticEnv()
 	if err = v.MergeInConfig(); err != nil {
 		return nil, errors.Wrap(err, constant.LoadConfigError)
