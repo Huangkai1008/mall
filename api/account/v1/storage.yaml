@@ -1,13 +1,17 @@
 openapi: 3.0.3
 info:
-  title: "Storage Service API"
-  description: "This is the API for the Storage Service."
+  title: Storage Service API
+  description: This is the API for the Storage Service.
   license:
-    name: "MIT"
-    url: "https://opensource.org/licenses/MIT"
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
   version: 0.1.0
+  contact:
+    name: HuangKai
+    url: 'https://github.com/Huangkai1008'
+    email: h1770360848@outlook.com
 servers:
-  - url: http://localhost:5001/{basePath}
+  - url: 'http://localhost:5001/{basePath}'
     description: Development server
     variables:
       basePath:
@@ -20,17 +24,16 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ObjectCreate'
-      description: "上传文件到对象存储"
+      description: 上传文件到对象存储
       responses:
-        "201":
-          description: "上传成功"
+        '201':
+          description: 上传成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Object'
-        "422":
+        '422':
           $ref: '#/components/responses/422'
-
 components:
   schemas:
     Object:
@@ -42,20 +45,14 @@ components:
           type: string
         last_modified:
           type: string
-#        id:
-#          type: integer
-#        username:
-#          type: string
-#        email:
-#          type: string
     ObjectCreate:
       type: object
       properties:
         file:
           type: string
           format: binary
-      required: [file]
+      required:
+        - file
   responses:
-    422:
+    '422':
       $ref: '#/components/schemas/Error'
-

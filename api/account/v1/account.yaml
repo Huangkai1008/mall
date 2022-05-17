@@ -1,17 +1,21 @@
 openapi: 3.0.3
 info:
-  title: "Account Service API"
-  description: "This is the API for the Account Service."
+  title: Account Service API
+  description: This is the API for the Account Service.
   license:
-    name: "MIT"
-    url: "https://opensource.org/licenses/MIT"
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
   version: 0.1.0
+  contact:
+    name: HuangKai
+    url: 'https://github.com/Huangkai1008'
+    email: h1770360848@outlook.com
 servers:
-  - url: http://localhost:5001/{basePath}
+  - url: 'http://localhost:5001/{basePath}'
     description: Development server
     variables:
       basePath:
-        default: /api/v1/accounts
+        default: api/v1/accounts
 paths:
   /:
     post:
@@ -19,48 +23,93 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountCreate'
-      description: "创建一个新的账户"
+              $ref: '#/components/schemas/Account'
+      description: 创建一个新的账户
       responses:
-        "201":
-          description: "创建新的账户成功"
+        '201':
+          description: 创建新的账户成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Account'
-        "422":
+        '422':
           $ref: '#/components/responses/422'
-  
+      operationId: createAccount
+      summary: 创建账户
+    parameters: []
 components:
   schemas:
-    Account:
+    ObjectMeta:
+      title: ObjectMeta
+      x-stoplight:
+        id: n7keb518hon7b
       type: object
+      x-examples:
+        example-1:
+          id: 1
+          create_time: '2019-08-24 14:15:22'
+          update_time: '2019-08-24 14:15:22'
       properties:
         id:
           type: integer
-        username:
+          format: int64
+          minimum: 0
+          exclusiveMinimum: true
+          example: 1
+          description: 对象唯一标识符
+          readOnly: true
+        create_time:
           type: string
-          description: 用户名
-        email:
+          format: date-time
+          example: '2019-08-24 14:15:22'
+          description: 对象的创建时间
+          readOnly: true
+        update_time:
           type: string
-          description: 邮箱
-    AccountCreate:
-      type: object
-      properties:
-        username:
-          type: string
-          description: 用户名
-          maxLength: 127
-        email:
-          type: string
-          description: 邮箱
-          maxLength: 127
-        password:
-          type: string
-          description: 密码
-          format: password
-          maxLength: 64
-      required: [username, email, password]
+          format: date-time
+          example: '2019-08-24 14:15:22'
+          description: 对象的更新时间
+          readOnly: true
+      required:
+        - id
+        - create_time
+        - update_time
+    Account:
+      allOf:
+        - $ref: '#/components/schemas/ObjectMeta'
+        - type: object
+          properties:
+            username:
+              type: string
+              maxLength: 127
+              description: 用户名
+            email:
+              type: string
+              format: email
+              maxLength: 127
+              description: 邮箱
+            password:
+              type: string
+              description: 密码
+              format: password
+              maxLength: 64
+              writeOnly: true
+          required:
+            - username
+            - email
+            - password
+      x-examples:
+        example-1:
+          id: 1
+          create_time: '2019-08-24 14:15:22'
+          update_time: '2019-08-24 14:15:22'
+          username: string
+          email: user@example.com
   responses:
-    422:
+    '422':
       $ref: '#/components/schemas/Error'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
